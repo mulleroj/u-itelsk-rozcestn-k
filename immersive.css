@@ -1,0 +1,670 @@
+/* ============================================================
+   IMMERSIVE INTRO – Učitelský rozcestník
+   Scrollovaná úvodní scéna s paralaxem a směrovkami.
+   
+   PROGRESSIVE ENHANCEMENT:
+   - Výchozí CSS zobrazuje vše staticky (funguje bez JS)
+   - JS přidá .immersive-ready třídu na <html>
+   - Animace se spouštějí pouze pod .immersive-ready
+   - @supports pro scroll-driven animations (Chrome 115+)
+   - prefers-reduced-motion pro klidnou variantu
+   ============================================================ */
+
+/* ─── Skip link ─── */
+.immersive-skip {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 10px 24px;
+    background: rgba(34, 34, 34, 0.9);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.immersive-skip:focus {
+    opacity: 1;
+    pointer-events: auto;
+    outline: 3px solid var(--accent-main, #d39e00);
+    outline-offset: 2px;
+}
+
+/* ─── Wrapper ─── */
+.immersive-wrapper {
+    position: relative;
+    overflow: hidden; /* prevent horizontal scroll from scene layers */
+}
+
+/* ─── Scroll space ───
+   This container defines the scroll "runway".
+   The scene inside is sticky for the duration of this height.
+   Desktop: 200vh (comfortable, ~1-2 scroll gestures)
+   Mobile: shorter via media query below */
+.immersive-scroll-space {
+    position: relative;
+    height: 200vh;
+}
+
+/* ─── Sticky scene ─── */
+.immersive-scene {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh; /* modern viewport unit, respects mobile chrome */
+    overflow: hidden;
+}
+
+/* ─── Scene layers ─── */
+.scene-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* allow clicks through decorative layers */
+}
+
+/* Restore pointer events on text layer */
+.scene-text {
+    pointer-events: auto;
+}
+
+/* ─── Layer 0: Sky ─── */
+.scene-sky {
+    background: linear-gradient(
+        180deg,
+        #e8f0f8 0%,
+        #d4e4f0 30%,
+        #c8dce8 50%,
+        #dce8d8 80%,
+        #c8d8c0 100%
+    );
+}
+
+/* ─── Layers 1-2: Hills (SVG) ─── */
+.scene-hills-far,
+.scene-hills-mid {
+    display: flex;
+    align-items: flex-end;
+}
+
+.hills-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.scene-hills-far {
+    z-index: 1;
+}
+
+.scene-hills-mid {
+    z-index: 2;
+}
+
+/* ─── Layer 3: Path / light line ─── */
+.scene-path {
+    z-index: 3;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.path-line {
+    width: 4px;
+    height: 30%;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(211, 158, 0, 0.3) 30%,
+        rgba(211, 158, 0, 0.6) 60%,
+        rgba(211, 158, 0, 0.8) 100%
+    );
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgba(211, 158, 0, 0.3);
+}
+
+/* ─── Layer 4: Signpost ─── */
+.scene-signpost {
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 10%;
+}
+
+.signpost-pole {
+    width: 6px;
+    height: 35%;
+    background: linear-gradient(180deg, #6b5b3e, #4a3f2e);
+    border-radius: 3px;
+    position: relative;
+}
+
+.signpost-signs {
+    position: absolute;
+    bottom: calc(10% + 10vh);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* ─── Individual signs ─── */
+.sign {
+    padding: 5px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--sign-color, #666);
+    border-radius: 3px;
+    white-space: nowrap;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Arrow shape via pseudo-elements */
+.sign-left {
+    align-self: flex-start;
+    margin-left: calc(50% - 10px);
+    border-radius: 3px 3px 3px 0;
+}
+
+.sign-left::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: var(--sign-color, #666);
+}
+
+.sign-right {
+    align-self: flex-end;
+    margin-right: calc(50% - 10px);
+    border-radius: 3px 3px 0 3px;
+}
+
+.sign-right::after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-left-color: var(--sign-color, #666);
+}
+
+/* Default: signs visible (no-JS state) */
+.sign {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ─── Layer 5: Eduobot placeholder ─── */
+.scene-eduobot {
+    z-index: 6;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: calc(10% + 25vh);
+}
+
+.eduobot-placeholder {
+    width: 60px;
+    height: 75px;
+    position: relative;
+}
+
+.eduobot-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* ─── Layer 6: Ground ─── */
+.scene-ground {
+    z-index: 4;
+    display: flex;
+    align-items: flex-end;
+}
+
+.ground-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ─── Layer 7: Text overlay ─── */
+.scene-text {
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.scene-text-content {
+    max-width: 600px;
+}
+
+.scene-slogan {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-main, #d39e00);
+    margin-bottom: 12px;
+}
+
+.scene-title {
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 800;
+    color: var(--text-dark, #222);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 20px rgba(255,255,255,0.6);
+}
+
+.scene-description {
+    font-size: 15px;
+    color: var(--text-light, #777);
+    max-width: 420px;
+    margin: 0 auto 24px;
+    line-height: 1.6;
+}
+
+.scene-cta {
+    display: inline-block;
+    padding: 12px 25px;
+    border: 2px solid var(--text-dark, #222);
+    color: var(--text-dark, #222);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.7);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.scene-cta:hover {
+    background-color: var(--text-dark, #222);
+    color: #fff;
+}
+
+.scene-cta:focus-visible {
+    outline: 3px solid var(--accent-main, #d39e00);
+    outline-offset: 3px;
+}
+
+/* ─── Scroll indicator ─── */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.7;
+}
+
+.scroll-indicator-text {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light, #777);
+}
+
+.scroll-indicator-arrow {
+    font-size: 18px;
+    color: var(--text-light, #777);
+    animation: bounce-down 2s ease-in-out infinite;
+}
+
+@keyframes bounce-down {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+}
+
+/* ─── Content transition ─── */
+.content-transition {
+    padding: 60px 20px 30px;
+    text-align: center;
+}
+
+.content-transition h2 {
+    font-size: 32px;
+    color: var(--text-dark, #222);
+    margin-bottom: 10px;
+}
+
+/* Hide the original hero section since we replaced it */
+.hero {
+    display: none;
+}
+
+/* Adjust features-section since we extracted the intro header */
+.features-section {
+    padding-top: 20px;
+}
+
+.features-intro {
+    /* The h2 and subtitle moved to content-transition */
+}
+
+.features-intro .section-subtitle,
+.features-intro h2,
+.features-intro .accent-line {
+    display: none; /* Already shown in content-transition */
+}
+
+
+/* ============================================================
+   ANIMATIONS – only when JS has confirmed support
+   ============================================================ */
+
+/* When JS is ready, prepare signs for entrance animation */
+.immersive-ready .sign {
+    opacity: 0;
+    transform: translateX(var(--sign-start-x, -30px));
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.immersive-ready .sign-right {
+    --sign-start-x: 30px;
+}
+
+.immersive-ready .sign-left {
+    --sign-start-x: -30px;
+}
+
+/* Signs become visible when IO adds .sign-visible */
+.immersive-ready .sign.sign-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Stagger delays via CSS custom property */
+.sign-delay-1 { transition-delay: 0s; }
+.sign-delay-2 { transition-delay: 0.08s; }
+.sign-delay-3 { transition-delay: 0.16s; }
+.sign-delay-4 { transition-delay: 0.24s; }
+.sign-delay-5 { transition-delay: 0.32s; }
+.sign-delay-6 { transition-delay: 0.40s; }
+.sign-delay-7 { transition-delay: 0.48s; }
+.sign-delay-8 { transition-delay: 0.56s; }
+
+/* Scale + parallax targets – applied by IO state classes */
+.immersive-ready .immersive-scene {
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.immersive-ready .scene-hills-far {
+    transition: transform 0.8s ease;
+}
+
+.immersive-ready .scene-hills-mid {
+    transition: transform 0.8s ease;
+}
+
+.immersive-ready .scene-ground {
+    transition: transform 0.8s ease;
+}
+
+/* When the user has scrolled into the "zoom" zone */
+.immersive-ready .immersive-scene.scene-zoomed {
+    transform: scale(1.08);
+}
+
+.immersive-ready .scene-zoomed .scene-hills-far {
+    transform: translateY(-8px);
+}
+
+.immersive-ready .scene-zoomed .scene-hills-mid {
+    transform: translateY(-4px);
+}
+
+.immersive-ready .scene-zoomed .scene-ground {
+    transform: translateY(6px);
+}
+
+.immersive-ready .scene-zoomed .path-line {
+    box-shadow: 0 0 20px rgba(211, 158, 0, 0.5);
+}
+
+/* Eduobot subtle idle */
+.immersive-ready .eduobot-placeholder {
+    animation: eduobot-idle 4s ease-in-out infinite;
+}
+
+@keyframes eduobot-idle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* Scroll indicator hides when scrolled */
+.immersive-ready .scroll-indicator {
+    transition: opacity 0.4s ease;
+}
+
+.immersive-ready .scene-zoomed .scroll-indicator {
+    opacity: 0;
+}
+
+/* Scene fade-out as user approaches content */
+.immersive-ready .immersive-scene.scene-fading {
+    opacity: 0.3;
+    transition: opacity 0.6s ease, transform 0.8s ease;
+}
+
+/* Feature items entrance */
+.immersive-ready .feature-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.immersive-ready .feature-item.feature-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Content transition entrance */
+.immersive-ready .content-transition {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.immersive-ready .content-transition.content-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* ============================================================
+   PROGRESSIVE ENHANCEMENT: CSS scroll-driven animations
+   Only in browsers that support animation-timeline.
+   This layer sits ON TOP of the IO-based approach.
+   ============================================================ */
+@supports (animation-timeline: scroll()) {
+    .immersive-ready .scene-hills-far {
+        animation: parallax-far linear both;
+        animation-timeline: scroll(nearest block);
+        animation-range: 0% 60%;
+    }
+
+    .immersive-ready .scene-hills-mid {
+        animation: parallax-mid linear both;
+        animation-timeline: scroll(nearest block);
+        animation-range: 0% 60%;
+    }
+
+    @keyframes parallax-far {
+        from { transform: translateY(0); }
+        to { transform: translateY(-12px); }
+    }
+
+    @keyframes parallax-mid {
+        from { transform: translateY(0); }
+        to { transform: translateY(-6px); }
+    }
+}
+
+
+/* ============================================================
+   MOBILE – simplified experience
+   ============================================================ */
+@media (max-width: 768px) {
+
+    .immersive-scroll-space {
+        height: 140vh; /* much shorter scroll runway */
+    }
+
+    .scene-title {
+        font-size: clamp(28px, 8vw, 40px);
+    }
+
+    .scene-slogan {
+        font-size: 12px;
+    }
+
+    .scene-description {
+        font-size: 13px;
+        max-width: 300px;
+    }
+
+    /* Hide distant hills on mobile for simplicity */
+    .scene-hills-far {
+        display: none;
+    }
+
+    /* Smaller signpost */
+    .signpost-signs {
+        max-width: 320px;
+    }
+
+    .sign {
+        font-size: 9px;
+        padding: 4px 12px;
+    }
+
+    /* Eduobot smaller */
+    .eduobot-placeholder {
+        width: 45px;
+        height: 56px;
+    }
+
+    /* Reduce parallax motion */
+    .immersive-ready .immersive-scene.scene-zoomed {
+        transform: scale(1.03);
+    }
+
+    .immersive-ready .scene-zoomed .scene-hills-mid {
+        transform: translateY(-2px);
+    }
+
+    .immersive-ready .scene-zoomed .scene-ground {
+        transform: translateY(3px);
+    }
+
+    /* Skip link always partly visible on mobile */
+    .immersive-skip {
+        opacity: 0.8;
+        pointer-events: auto;
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 380px) {
+    .scene-title {
+        font-size: 26px;
+    }
+
+    .signpost-signs {
+        max-width: 260px;
+    }
+
+    .sign {
+        font-size: 8px;
+        padding: 3px 10px;
+    }
+}
+
+
+/* ============================================================
+   PREFERS REDUCED MOTION – calm variant
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+
+    /* No parallax, no zoom, no transitions */
+    .immersive-scroll-space {
+        height: auto; /* No extended scroll space */
+    }
+
+    .immersive-scene {
+        position: relative; /* Not sticky */
+        min-height: 80vh;
+    }
+
+    /* Everything immediately visible */
+    .sign {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .immersive-scene,
+    .scene-hills-far,
+    .scene-hills-mid,
+    .scene-ground,
+    .eduobot-placeholder,
+    .feature-item,
+    .content-transition {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+    .scroll-indicator {
+        display: none;
+    }
+
+    .scroll-indicator-arrow {
+        animation: none;
+    }
+
+    /* Feature items immediately visible */
+    .feature-item {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .content-transition {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
