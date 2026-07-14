@@ -27,6 +27,11 @@
         <!-- Scroll space: defines how long the scene stays pinned -->
         <div class="immersive-scroll-space">
 
+            <!-- Sentinels for scroll timing triggers -->
+            <div class="immersive-sentinel sentinel-signs" aria-hidden="true"></div>
+            <div class="immersive-sentinel sentinel-zoom" aria-hidden="true"></div>
+            <div class="immersive-sentinel sentinel-fade" aria-hidden="true"></div>
+
             <!-- Sticky visual scene -->
             <div class="immersive-scene">
 
@@ -120,7 +125,7 @@
     <!-- ============================================================
          CONTENT START – anchor for skip link and transition
          ============================================================ -->
-    <div id="content-start" class="content-transition">
+    <div class="content-transition">
         <div class="container">
             <span class="section-subtitle">SMĚRY ROZCESTNÍKU</span>
             <h2>Vyberte si, kam dál</h2>
@@ -129,7 +134,7 @@
     </div>
 
     <!-- MAIN CONTAINER – original content preserved -->
-    <main class="container">
+    <main id="content-start" class="container" tabindex="-1">
 
         <!-- FEATURES SECTION -->
         <section class="features-section">

@@ -53,6 +53,22 @@
     height: 200vh;
 }
 
+/* ─── Sentinels for IntersectionObserver ─── */
+.immersive-sentinel {
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+/* Sentinel trigger heights (scrolled below top of viewport + safe offset) */
+.sentinel-signs { top: 105vh; }
+.sentinel-zoom  { top: 125vh; }
+.sentinel-fade  { top: 155vh; }
+
+
 /* ─── Sticky scene ─── */
 .immersive-scene {
     position: sticky;
@@ -505,32 +521,9 @@
 
 /* ============================================================
    PROGRESSIVE ENHANCEMENT: CSS scroll-driven animations
-   Only in browsers that support animation-timeline.
-   This layer sits ON TOP of the IO-based approach.
+   Deactivated for the first prototype to rely entirely on status classes
    ============================================================ */
-@supports (animation-timeline: scroll()) {
-    .immersive-ready .scene-hills-far {
-        animation: parallax-far linear both;
-        animation-timeline: scroll(nearest block);
-        animation-range: 0% 60%;
-    }
 
-    .immersive-ready .scene-hills-mid {
-        animation: parallax-mid linear both;
-        animation-timeline: scroll(nearest block);
-        animation-range: 0% 60%;
-    }
-
-    @keyframes parallax-far {
-        from { transform: translateY(0); }
-        to { transform: translateY(-12px); }
-    }
-
-    @keyframes parallax-mid {
-        from { transform: translateY(0); }
-        to { transform: translateY(-6px); }
-    }
-}
 
 
 /* ============================================================
@@ -541,6 +534,11 @@
     .immersive-scroll-space {
         height: 140vh; /* much shorter scroll runway */
     }
+
+    /* Shift sentinels closer to top for 140vh runway */
+    .sentinel-signs { top: 102vh; }
+    .sentinel-zoom  { top: 112vh; }
+    .sentinel-fade  { top: 122vh; }
 
     .scene-title {
         font-size: clamp(28px, 8vw, 40px);

@@ -20,15 +20,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Smooth scroll for anchors
+    // Smooth scroll for anchors with programmatic focus and reduced motion support
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
             if (target) {
+                const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                // Scroll to target
                 target.scrollIntoView({
-                    behavior: 'smooth'
+                    behavior: isReduced ? 'auto' : 'smooth',
+                    block: 'start'
                 });
+
+                // Update URL hash without jumping
+                if (history.pushState) {
+                    history.pushState(null, null, targetId);
+                } else {
+                    window.location.hash = targetId;
+                }
+
+                // Programmatic focus shift for accessibility
+                target.focus();
             }
         });
     });
