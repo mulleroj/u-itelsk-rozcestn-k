@@ -175,40 +175,6 @@
         prefersReducedMotion.addListener(handleChange);
     }
 
-    // ─── Programmatic Focus & Smooth Scroll for Skip CTA ───
-    // Focus target function (respects accessibility and prevents focus resetting to top)
-    function scrollToMain(event) {
-        event.preventDefault();
-
-        var isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // Plynulé nebo okamžité odrolování podle reduced motion preferencí
-        contentStart.scrollIntoView({
-            behavior: isReduced ? 'auto' : 'smooth',
-            block: 'start'
-        });
-
-        // Update URL hash without jumping
-        if (history.pushState) {
-            history.pushState(null, null, '#content-start');
-        } else {
-            window.location.hash = 'content-start';
-        }
-
-        // Programmatic focus
-        contentStart.focus();
-    }
-
-    var skipLink = document.querySelector('.immersive-skip');
-    var ctaBtn = document.querySelector('.scene-cta');
-
-    if (skipLink) {
-        skipLink.addEventListener('click', scrollToMain);
-    }
-    if (ctaBtn) {
-        ctaBtn.addEventListener('click', scrollToMain);
-    }
-
     // ─── Initial scroll status check via requestAnimationFrame ───
     // Ensures that when page loads at scrollY === 0, no state classes are active
     requestAnimationFrame(function () {

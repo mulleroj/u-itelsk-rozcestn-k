@@ -1,7 +1,7 @@
 /* ============================================================
    IMMERSIVE INTRO – Učitelský rozcestník
    Scrollovaná úvodní scéna s paralaxem a směrovkami.
-   
+
    PROGRESSIVE ENHANCEMENT:
    - Výchozí CSS zobrazuje vše staticky (funguje bez JS)
    - JS přidá .immersive-ready třídu na <html>
@@ -373,6 +373,17 @@
     font-size: 32px;
     color: var(--text-dark, #222);
     margin-bottom: 10px;
+}
+
+/* Main container start styling – scroll offset and focus outline for accessibility */
+#content-start {
+    scroll-margin-top: 3rem; /* padding above container after scroll skip */
+}
+
+#content-start:focus {
+    outline: 3px solid var(--accent-main, #d39e00);
+    outline-offset: 15px;
+    border-radius: 8px;
 }
 
 /* Hide the original hero section since we replaced it */

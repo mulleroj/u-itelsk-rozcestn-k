@@ -23,17 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Smooth scroll for anchors with programmatic focus and reduced motion support
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault();
             const targetId = this.getAttribute('href');
+            if (!targetId || targetId === '#') return; // Skip empty anchors
+
             const target = document.querySelector(targetId);
             if (target) {
+                e.preventDefault();
                 const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-                // Scroll to target
-                target.scrollIntoView({
-                    behavior: isReduced ? 'auto' : 'smooth',
-                    block: 'start'
-                });
 
                 // Update URL hash without jumping
                 if (history.pushState) {
@@ -43,7 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Programmatic focus shift for accessibility
-                target.focus();
+                try {
+                    target.focus({ preventScroll: true });
+                } catch (err) {
+                    // Fallback for older browsers
+                    target.focus();
+                }
+
+                // Scroll to target
+                target.scrollIntoView({
+                    behavior: isReduced ? 'auto' : 'smooth',
+                    block: 'start'
+                });
             }
         });
     });
