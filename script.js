@@ -19,13 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
             gsap.set(".char-eduobot", { opacity: 0, scale: 0.5, y: 100 });
             gsap.set(".char-signpost", { opacity: 0, scale: 0.5, y: 100 });
             gsap.set(".theme-world", { autoAlpha: 0, scale: 0.8, y: 50 });
+            gsap.set(".scene-outro-panel", { autoAlpha: 0, scale: 0.8, y: 50 });
+            gsap.set(".scroll-cue", { autoAlpha: 1 });
 
             // Create pinned cinematic scroll timeline
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: ".immersive-scroll-space",
                     start: "top top",
-                    end: "+=600%", // 6x viewport height scroll runway
+                    end: "+=700%", // Slightly longer for the extra outro chapter (7x viewport height)
                     scrub: 0.5,
                     pin: ".immersive-scene",
                     pinSpacing: true,
@@ -36,9 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Save reference for custom scroll navigation
             scrollTriggerInstance = tl.scrollTrigger;
 
-            // Chapter 0 -> 1: Intro Hero Fades Out, Characters slide up
+            // Chapter 0 -> 1: Intro Hero Fades Out, Characters slide up, Hide scroll cue
             tl.to(".scene-intro", { opacity: 0, scale: 0.9, y: -30, duration: 1.5 })
-              .to(".char-eduobot", { opacity: 1, scale: 1, y: 0, duration: 2 }, "-=1")
+              .to(".scroll-cue", { autoAlpha: 0, duration: 1 }, "-=1.5")
+              .to(".char-eduobot", { opacity: 1, scale: 1, y: 0, duration: 2 }, "-=1.2")
               .to(".char-signpost", { opacity: 1, scale: 1, y: 0, duration: 2 }, "-=1.8")
               .to(".bg-img", { scale: 1.02, duration: 2 }, "-=2");
 
@@ -62,8 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
             tl.to(".world-library", { autoAlpha: 0, scale: 1.2, y: -50, duration: 2 })
               .to(".world-media", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
 
-            // Chapter 6 -> 7: Return to full view (zoom out)
+            // Chapter 6 -> 7: Outro Panel enters
             tl.to(".world-media", { autoAlpha: 0, scale: 1.2, y: -50, duration: 2 })
+              .to(".scene-outro-panel", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
+
+            // Chapter 7 -> Exit: Return to full view (zoom out) and fade outro panel
+            tl.to(".scene-outro-panel", { autoAlpha: 0, scale: 1.1, y: -35, duration: 2 })
               .to([".char-eduobot", ".char-signpost"], { opacity: 0.4, scale: 0.9, y: 0, duration: 2 }, "-=1.5")
               .to(".bg-img", { scale: 1.0, duration: 2 }, "-=2");
 
@@ -71,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Cleanup on matchMedia destroy
                 scrollTriggerInstance = null;
                 document.documentElement.classList.remove('gsap-ready');
+                // Revert all GSAP inline styles to prevent layout blocking in mobile view
+                gsap.killTweensOf("*");
+                gsap.set([".theme-world", ".scene-intro", ".scene-outro-panel", ".char-eduobot", ".char-signpost", ".bg-img", ".scroll-cue"], { clearProps: "all" });
             };
         });
     }
@@ -97,23 +107,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.documentElement.classList.contains('gsap-ready')) {
                 if (targetId === '#world-ai') {
                     e.preventDefault();
-                    scrollToCinematicPhase(0.32);
+                    scrollToCinematicPhase(0.24);
                     return;
                 } else if (targetId === '#world-language') {
                     e.preventDefault();
-                    scrollToCinematicPhase(0.48);
+                    scrollToCinematicPhase(0.38);
                     return;
                 } else if (targetId === '#world-electric') {
                     e.preventDefault();
-                    scrollToCinematicPhase(0.63);
+                    scrollToCinematicPhase(0.51);
                     return;
                 } else if (targetId === '#world-library') {
                     e.preventDefault();
-                    scrollToCinematicPhase(0.76);
+                    scrollToCinematicPhase(0.64);
                     return;
                 } else if (targetId === '#world-media') {
                     e.preventDefault();
-                    scrollToCinematicPhase(0.89);
+                    scrollToCinematicPhase(0.77);
                     return;
                 }
             }

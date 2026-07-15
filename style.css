@@ -138,9 +138,24 @@ button:focus-visible,
     gap: 60px;
 }
 
-/* Hide background-landscape asset in mobile/fallback mode (no layout shift) */
+/* Show background-landscape asset as a subtle atmospheric layer in mobile/fallback mode */
 .scene-bg {
-    display: none;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.15;
+    z-index: 0;
+}
+
+.scene-bg .bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* Scroll indicator hidden in mobile/fallback */
@@ -471,6 +486,32 @@ button:focus-visible,
         margin: 0;
     }
 
+    /* Outro panel styling for Chapter 7 */
+    html.gsap-ready .scene-outro-panel {
+        z-index: 9;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    html.gsap-ready .outro-panel-content {
+        text-align: center !important;
+        max-width: 460px;
+        background: rgba(6, 15, 18, 0.92);
+        border: 1px solid rgba(211, 158, 0, 0.4);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        pointer-events: auto;
+    }
+
     /* Scroll Cue */
     html.gsap-ready .scroll-cue {
         display: flex;
@@ -483,6 +524,7 @@ button:focus-visible,
         gap: 6px;
         opacity: 0.8;
         z-index: 12;
+        pointer-events: none; /* Do not intercept clicks on active panels */
     }
 
     html.gsap-ready .scroll-cue-text {
