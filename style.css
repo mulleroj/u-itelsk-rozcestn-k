@@ -10,7 +10,7 @@
 
     /* Text Colors */
     --text-cream: #f0f4f5;      /* Primary readable cream text */
-    --text-muted: #8aa4ab;      /* Secondary secondary slate-teal text */
+    --text-muted: #b8d2d9;      /* Lighter secondary slate-teal text (enhanced contrast by ~20%) */
     --text-dark: #040a0c;       /* Contrast dark text for gold elements */
 
     /* Accent Colors */
@@ -385,36 +385,39 @@ button:focus-visible,
     }
 
     /* Characters overlay */
+    /* Characters overlay (centered group aligned with the road in landscape background) */
     html.gsap-ready .scene-characters {
-        display: block;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 60px; /* balanced spacing between them */
         z-index: 5;
         position: absolute;
-        bottom: 0;
-        left: 0;
+        bottom: 8%; /* visually matches the horizon road placement */
+        left: 50%;
+        transform: translateX(-50%);
         width: 100%;
+        max-width: 960px;
         height: 100%;
+        pointer-events: none;
     }
 
     html.gsap-ready .char-eduobot {
-        position: absolute;
-        bottom: 6%;
-        left: 20%;
-        height: 52%;
+        height: 61vh; /* 58-64% of viewport height */
         width: auto;
+        aspect-ratio: 3/4;
         transform-origin: bottom center;
         opacity: 0;
-        transform: translateY(100px) scale(0.6);
+        transform: translateY(80px) scale(0.7);
     }
 
     html.gsap-ready .char-signpost {
-        position: absolute;
-        bottom: 6%;
-        right: 20%;
-        height: 48%;
+        height: 55vh; /* 52-58% of viewport height */
         width: auto;
+        aspect-ratio: 3/4;
         transform-origin: bottom center;
         opacity: 0;
-        transform: translateY(100px) scale(0.6);
+        transform: translateY(80px) scale(0.7);
     }
 
     /* Cinematic theme worlds styling */

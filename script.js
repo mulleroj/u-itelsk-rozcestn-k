@@ -39,40 +39,39 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollTriggerInstance = tl.scrollTrigger;
 
             // Chapter 0 -> 1: Intro Hero Fades Out, Characters slide up, Hide scroll cue
-            tl.to(".scene-intro", { opacity: 0, scale: 0.9, y: -30, duration: 1.5 })
-              .to(".scroll-cue", { autoAlpha: 0, duration: 1 }, "-=1.5")
-              .to(".char-eduobot", { opacity: 1, scale: 1, y: 0, duration: 2 }, "-=1.2")
-              .to(".char-signpost", { opacity: 1, scale: 1, y: 0, duration: 2 }, "-=1.8")
-              .to(".bg-img", { scale: 1.02, duration: 2 }, "-=2");
+            tl.to(".scene-intro", { autoAlpha: 0, scale: 0.9, y: -30, duration: 1.0 })
+              .to(".scroll-cue", { autoAlpha: 0, duration: 1.0 }, "-=1.0")
+              .to(".char-eduobot", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "+=0.1")
+              .to(".char-signpost", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "-=1.0")
+              .to(".bg-img", { scale: 1.02, duration: 1.2 }, "-=1.2");
 
-            // Chapter 1 -> 2: AI & Assistants World enters
-            tl.to([".char-eduobot", ".char-signpost"], { opacity: 0.05, scale: 0.7, y: -50, duration: 2 })
-              .to(".world-ai", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
+            // Chapter 1 -> 2: AI & Assistants World enters, Characters fully hide
+            tl.to([".char-eduobot", ".char-signpost"], { autoAlpha: 0, scale: 0.7, y: -50, duration: 1.0 })
+              .to(".world-ai", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "-=0.3");
 
             // Chapter 2 -> 3: Language World enters
-            tl.to(".world-ai", { autoAlpha: 0, scale: 1.2, y: -50, duration: 2 })
-              .to(".world-language", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
+            tl.to(".world-ai", { autoAlpha: 0, scale: 1.2, y: -50, duration: 1.0 })
+              .to(".world-language", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "-=0.3");
 
             // Chapter 3 -> 4: Electric World enters
-            tl.to(".world-language", { autoAlpha: 0, scale: 1.2, y: -50, duration: 2 })
-              .to(".world-electric", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
+            tl.to(".world-language", { autoAlpha: 0, scale: 1.2, y: -50, duration: 1.0 })
+              .to(".world-electric", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "-=0.3");
 
             // Chapter 4 -> 5: Library World (Materials) enters
-            tl.to(".world-electric", { autoAlpha: 0, scale: 1.2, y: -50, duration: 2 })
-              .to(".world-library", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
+            tl.to(".world-electric", { autoAlpha: 0, scale: 1.2, y: -50, duration: 1.0 })
+              .to(".world-library", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "-=0.3");
 
             // Chapter 5 -> 6: Media World (Audio/Video) enters
-            tl.to(".world-library", { autoAlpha: 0, scale: 1.2, y: -50, duration: 2 })
-              .to(".world-media", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
+            tl.to(".world-library", { autoAlpha: 0, scale: 1.2, y: -50, duration: 1.0 })
+              .to(".world-media", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "-=0.3");
 
             // Chapter 6 -> 7: Outro Panel enters
-            tl.to(".world-media", { autoAlpha: 0, scale: 1.2, y: -50, duration: 2 })
-              .to(".scene-outro-panel", { autoAlpha: 1, scale: 1, y: 0, duration: 2 }, "-=1.5");
+            tl.to(".world-media", { autoAlpha: 0, scale: 1.2, y: -50, duration: 1.0 })
+              .to(".scene-outro-panel", { autoAlpha: 1, scale: 1, y: 0, duration: 1.2 }, "-=0.3");
 
-            // Chapter 7 -> Exit: Return to full view (zoom out) and fade outro panel
-            tl.to(".scene-outro-panel", { autoAlpha: 0, scale: 1.1, y: -35, duration: 2 })
-              .to([".char-eduobot", ".char-signpost"], { opacity: 0.4, scale: 0.9, y: 0, duration: 2 }, "-=1.5")
-              .to(".bg-img", { scale: 1.0, duration: 2 }, "-=2");
+            // Chapter 7 -> Exit: Return to full view (zoom out) and fade outro panel (Characters remain hidden)
+            tl.to(".scene-outro-panel", { autoAlpha: 0, scale: 1.1, y: -35, duration: 1.0 })
+              .to(".bg-img", { scale: 1.0, duration: 1.2 }, "-=0.8");
 
             return () => {
                 // Cleanup on matchMedia destroy
