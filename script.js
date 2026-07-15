@@ -36,9 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 scale: 0.95
             });
             gsap.set(".scene-crossroads", { autoAlpha: 0, scale: 0.8, y: 50 });
-            gsap.set(".world-node", { className: "world-node" });
-            gsap.set(".chapter-callout", { autoAlpha: 0, className: "chapter-callout" });
-            gsap.set(".callout-intro", { autoAlpha: 1, className: "chapter-callout active-callout" });
+            gsap.set(".world-node", {
+                opacity: 0.35,
+                filter: "brightness(0.6) saturate(0.6) blur(1px)",
+                zIndex: 4
+            });
+            // Setup precise individual scale attributes
+            gsap.set(".world-ai", { scale: 0.90 });
+            gsap.set(".world-language", { scale: 0.72 });
+            gsap.set(".world-electric", { scale: 0.90 });
+            gsap.set(".world-library", { scale: 0.72 });
+            gsap.set(".world-media", { scale: 0.60 });
+
+            gsap.set(".chapter-callout", { autoAlpha: 0, pointerEvents: "none" });
+            gsap.set(".callout-intro", { autoAlpha: 1, pointerEvents: "auto" });
             gsap.set(".scroll-cue", { autoAlpha: 1 });
 
             // Create pinned cinematic scroll timeline
@@ -58,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollTriggerInstance = tl.scrollTrigger;
 
             // Chapter 0 -> 1: Intro Fades Out, Crossroads slide up
-            tl.to(".callout-intro", { autoAlpha: 0, duration: 1.0 })
+            tl.to(".callout-intro", { autoAlpha: 0, pointerEvents: "none", duration: 1.0 })
               .to(".scroll-cue", { autoAlpha: 0, duration: 1.0 }, "-=1.0")
               .to(".world-stage", {
                   x: () => getCameraCoords(0.50, 0.70, 0.50, 0.65, 1.25).x,
@@ -78,76 +89,76 @@ document.addEventListener('DOMContentLoaded', () => {
                   scale: 1.50,
                   duration: 1.5
               }, "-=0.8")
-              .to(".world-ai", { className: "world-node active-world", duration: 0.2 }, "-=0.5")
-              .to(".callout-ai", { autoAlpha: 1, className: "chapter-callout active-callout", duration: 1.0 }, "-=0.3")
+              .to(".world-ai", { opacity: 1.0, filter: "brightness(1.15) saturate(1.0) drop-shadow(0 0 45px rgba(211, 158, 0, 0.25))", scale: 0.97, zIndex: 5, duration: 0.5 }, "-=0.5")
+              .to(".callout-ai", { autoAlpha: 1, pointerEvents: "auto", duration: 1.0 }, "-=0.3")
               .to(".scene-background", { x: () => window.innerWidth * 2.2 * 0.27 * -0.04, y: () => window.innerHeight * 1.5 * 0.57 * -0.04, duration: 1.5 }, "-=1.5");
 
             // Chapter 2 -> 3: Language World enters
-            tl.to(".callout-ai", { autoAlpha: 0, className: "chapter-callout", duration: 1.0 })
-              .to(".world-ai", { className: "world-node", duration: 0.2 }, "-=1.0")
+            tl.to(".callout-ai", { autoAlpha: 0, pointerEvents: "none", duration: 1.0 })
+              .to(".world-ai", { opacity: 0.35, filter: "brightness(0.6) saturate(0.6) blur(1px)", scale: 0.90, zIndex: 4, duration: 0.5 }, "-=1.0")
               .to(".world-stage", {
                   x: () => getCameraCoords(0.18, 0.37, 0.35, 0.50, 1.60).x,
                   y: () => getCameraCoords(0.18, 0.37, 0.35, 0.50, 1.60).y,
                   scale: 1.60,
                   duration: 1.5
               }, "-=0.8")
-              .to(".world-language", { className: "world-node active-world", duration: 0.2 }, "-=0.5")
-              .to(".callout-language", { autoAlpha: 1, className: "chapter-callout active-callout", duration: 1.0 }, "-=0.3")
+              .to(".world-language", { opacity: 1.0, filter: "brightness(1.15) saturate(1.0) drop-shadow(0 0 45px rgba(211, 158, 0, 0.25))", scale: 0.77, zIndex: 5, duration: 0.5 }, "-=0.5")
+              .to(".callout-language", { autoAlpha: 1, pointerEvents: "auto", duration: 1.0 }, "-=0.3")
               .to(".scene-background", { x: () => window.innerWidth * 2.2 * 0.18 * -0.04, y: () => window.innerHeight * 1.5 * 0.37 * -0.04, duration: 1.5 }, "-=1.5");
 
             // Chapter 3 -> 4: Electric World enters
-            tl.to(".callout-language", { autoAlpha: 0, className: "chapter-callout", duration: 1.0 })
-              .to(".world-language", { className: "world-node", duration: 0.2 }, "-=1.0")
+            tl.to(".callout-language", { autoAlpha: 0, pointerEvents: "none", duration: 1.0 })
+              .to(".world-language", { opacity: 0.35, filter: "brightness(0.6) saturate(0.6) blur(1px)", scale: 0.72, zIndex: 4, duration: 0.5 }, "-=1.0")
               .to(".world-stage", {
                   x: () => getCameraCoords(0.48, 0.31, 0.65, 0.45, 1.50).x,
                   y: () => getCameraCoords(0.48, 0.31, 0.65, 0.45, 1.50).y,
                   scale: 1.50,
                   duration: 1.5
               }, "-=0.8")
-              .to(".world-electric", { className: "world-node active-world", duration: 0.2 }, "-=0.5")
-              .to(".callout-electric", { autoAlpha: 1, className: "chapter-callout active-callout", duration: 1.0 }, "-=0.3")
+              .to(".world-electric", { opacity: 1.0, filter: "brightness(1.15) saturate(1.0) drop-shadow(0 0 45px rgba(211, 158, 0, 0.25))", scale: 0.97, zIndex: 5, duration: 0.5 }, "-=0.5")
+              .to(".callout-electric", { autoAlpha: 1, pointerEvents: "auto", duration: 1.0 }, "-=0.3")
               .to(".scene-background", { x: () => window.innerWidth * 2.2 * 0.48 * -0.04, y: () => window.innerHeight * 1.5 * 0.31 * -0.04, duration: 1.5 }, "-=1.5");
 
             // Chapter 4 -> 5: Library World enters
-            tl.to(".callout-electric", { autoAlpha: 0, className: "chapter-callout", duration: 1.0 })
-              .to(".world-electric", { className: "world-node", duration: 0.2 }, "-=1.0")
+            tl.to(".callout-electric", { autoAlpha: 0, pointerEvents: "none", duration: 1.0 })
+              .to(".world-electric", { opacity: 0.35, filter: "brightness(0.6) saturate(0.6) blur(1px)", scale: 0.90, zIndex: 4, duration: 0.5 }, "-=1.0")
               .to(".world-stage", {
                   x: () => getCameraCoords(0.72, 0.38, 0.35, 0.45, 1.60).x,
                   y: () => getCameraCoords(0.72, 0.38, 0.35, 0.45, 1.60).y,
                   scale: 1.60,
                   duration: 1.5
               }, "-=0.8")
-              .to(".world-library", { className: "world-node active-world", duration: 0.2 }, "-=0.5")
-              .to(".callout-library", { autoAlpha: 1, className: "chapter-callout active-callout", duration: 1.0 }, "-=0.3")
+              .to(".world-library", { opacity: 1.0, filter: "brightness(1.15) saturate(1.0) drop-shadow(0 0 45px rgba(211, 158, 0, 0.25))", scale: 0.77, zIndex: 5, duration: 0.5 }, "-=0.5")
+              .to(".callout-library", { autoAlpha: 1, pointerEvents: "auto", duration: 1.0 }, "-=0.3")
               .to(".scene-background", { x: () => window.innerWidth * 2.2 * 0.72 * -0.04, y: () => window.innerHeight * 1.5 * 0.38 * -0.04, duration: 1.5 }, "-=1.5");
 
             // Chapter 5 -> 6: Media World enters
-            tl.to(".callout-library", { autoAlpha: 0, className: "chapter-callout", duration: 1.0 })
-              .to(".world-library", { className: "world-node", duration: 0.2 }, "-=1.0")
+            tl.to(".callout-library", { autoAlpha: 0, pointerEvents: "none", duration: 1.0 })
+              .to(".world-library", { opacity: 0.35, filter: "brightness(0.6) saturate(0.6) blur(1px)", scale: 0.72, zIndex: 4, duration: 0.5 }, "-=1.0")
               .to(".world-stage", {
                   x: () => getCameraCoords(0.84, 0.20, 0.35, 0.45, 1.70).x,
                   y: () => getCameraCoords(0.84, 0.20, 0.35, 0.45, 1.70).y,
                   scale: 1.70,
                   duration: 1.5
               }, "-=0.8")
-              .to(".world-media", { className: "world-node active-world", duration: 0.2 }, "-=0.5")
-              .to(".callout-media", { autoAlpha: 1, className: "chapter-callout active-callout", duration: 1.0 }, "-=0.3")
+              .to(".world-media", { opacity: 1.0, filter: "brightness(1.15) saturate(1.0) drop-shadow(0 0 45px rgba(211, 158, 0, 0.25))", scale: 0.65, zIndex: 5, duration: 0.5 }, "-=0.5")
+              .to(".callout-media", { autoAlpha: 1, pointerEvents: "auto", duration: 1.0 }, "-=0.3")
               .to(".scene-background", { x: () => window.innerWidth * 2.2 * 0.84 * -0.04, y: () => window.innerHeight * 1.5 * 0.20 * -0.04, duration: 1.5 }, "-=1.5");
 
             // Chapter 6 -> 7: Outro Panel enters
-            tl.to(".callout-media", { autoAlpha: 0, className: "chapter-callout", duration: 1.0 })
-              .to(".world-media", { className: "world-node", duration: 0.2 }, "-=1.0")
+            tl.to(".callout-media", { autoAlpha: 0, pointerEvents: "none", duration: 1.0 })
+              .to(".world-media", { opacity: 0.35, filter: "brightness(0.6) saturate(0.6) blur(1px)", scale: 0.60, zIndex: 4, duration: 0.5 }, "-=1.0")
               .to(".world-stage", {
                   x: () => getCameraCoords(0.50, 0.40, 0.50, 0.45, 0.95).x,
                   y: () => getCameraCoords(0.50, 0.40, 0.50, 0.45, 0.95).y,
                   scale: 0.95,
                   duration: 1.5
               }, "-=0.8")
-              .to(".callout-outro", { autoAlpha: 1, className: "chapter-callout active-callout", duration: 1.2 }, "-=0.5")
+              .to(".callout-outro", { autoAlpha: 1, pointerEvents: "auto", duration: 1.2 }, "-=0.5")
               .to(".scene-background", { x: 0, y: 0, duration: 1.5 }, "-=1.5");
 
             // Final Outro Exit: fade outro panel
-            tl.to(".callout-outro", { autoAlpha: 0, className: "chapter-callout", duration: 1.0 });
+            tl.to(".callout-outro", { autoAlpha: 0, pointerEvents: "none", duration: 1.0 });
 
             return () => {
                 // Cleanup on matchMedia destroy
