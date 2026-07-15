@@ -17,49 +17,41 @@
 
     <!-- IMMERSIVEwrapper containing the scroll timeline visual layers -->
     <div class="immersive-wrapper">
-        <div class="immersive-scroll-space">
-            <div class="immersive-scene">
-                <!-- Layer 0: Fullscreen background -->
-                <div class="scene-layer scene-bg" aria-hidden="true">
-                    <img src="assets/immersive-home/01-background-landscape.png"
-                         alt=""
-                         width="1920"
-                         height="1080"
-                         loading="eager"
-                         class="bg-img">
-                </div>
+        <div class="immersive-scroll            <div class="immersive-scene immersive-camera">
+                <!-- Large spatial world stage -->
+                <div class="world-stage">
 
-                <!-- Layer 1: Intro Hero Content -->
-                <div class="scene-layer scene-intro">
-                    <div class="intro-content">
-                        <h1>Učitelský rozcestník</h1>
-                        <p class="lead">Kudy dnes povedete výuku?</p>
-                        <p class="description">Vyberte si cestu k nástrojům, materiálům a aplikacím, které můžete rovnou použít ve třídě.</p>
-                        <a href="#world-ai" class="btn-primary scene-cta">Vydejte se po cestě</a>
+                    <!-- Pozadí krajiny -->
+                    <div class="scene-background">
+                        <img src="assets/immersive-home/01-background-landscape.png"
+                             alt=""
+                             width="1920"
+                             height="1080"
+                             loading="eager"
+                             class="bg-img">
                     </div>
-                </div>
 
-                <!-- Layer 2: Eduobot and Signpost (sticky, zoom/fade at start) -->
-                <div class="scene-layer scene-characters" aria-hidden="true">
-                    <img src="assets/immersive-home/02-eduobot.png"
-                         alt=""
-                         width="1200"
-                         height="1600"
-                         loading="eager"
-                         class="char-eduobot">
-                    <img src="assets/immersive-home/03-signpost.png"
-                         alt=""
-                         width="1200"
-                         height="1600"
-                         loading="eager"
-                         class="char-signpost">
-                </div>
+                    <!-- Atmosféra a záře -->
+                    <div class="scene-atmosphere"></div>
 
-                <!-- 5 Theme Worlds (absolutely positioned on desktop, stacked on mobile) -->
+                    <!-- Rozcestí (Eduobot + Rozcestník) -->
+                    <div class="scene-crossroads">
+                        <img src="assets/immersive-home/02-eduobot.png"
+                             alt=""
+                             width="1200"
+                             height="1600"
+                             loading="eager"
+                             class="char-eduobot">
+                        <img src="assets/immersive-home/03-signpost.png"
+                             alt=""
+                             width="1200"
+                             height="1600"
+                             loading="eager"
+                             class="char-signpost">
+                    </div>
 
-                <!-- World A: AI A ASISTENTI -->
-                <section id="world-ai" class="scene-layer theme-world world-ai">
-                    <div class="world-visual" aria-hidden="true">
+                    <!-- 5 Světů jako prostorové uzly (pouze vizuální část) -->
+                    <div class="world-node world-ai" id="world-ai">
                         <img src="assets/immersive-home/04-ai-world.png"
                              alt=""
                              width="1600"
@@ -67,23 +59,8 @@
                              loading="lazy"
                              decoding="async">
                     </div>
-                    <div class="world-panel">
-                        <h2>AI a asistenti</h2>
-                        <p>AI pomocníci, praktické návody a nástroje pro přípravu výuky.</p>
-                        <div class="world-links">
-                            <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-regular fa-file-code"></i> Přehled asistentů
-                            </a>
-                            <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-regular fa-lightbulb"></i> NotebookLM průvodce
-                            </a>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- World B: ANGLIČTINA -->
-                <section id="world-language" class="scene-layer theme-world world-language">
-                    <div class="world-visual" aria-hidden="true">
+                    <div class="world-node world-language" id="world-language">
                         <img src="assets/immersive-home/05-language-world.png"
                              alt=""
                              width="1600"
@@ -91,23 +68,8 @@
                              loading="lazy"
                              decoding="async">
                     </div>
-                    <div class="world-panel">
-                        <h2>Angličtina</h2>
-                        <p>Slovní zásoba, procvičování a interaktivní aktivity do hodin angličtiny.</p>
-                        <div class="world-links">
-                            <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-bolt"></i> Maturita Solutions
-                            </a>
-                            <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-graduation-cap"></i> Cvičení do angličtiny
-                            </a>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- World C: ELEKTRO -->
-                <section id="world-electric" class="scene-layer theme-world world-electric">
-                    <div class="world-visual" aria-hidden="true">
+                    <div class="world-node world-electric" id="world-electric">
                         <img src="assets/immersive-home/06-electric-world.png"
                              alt=""
                              width="1600"
@@ -115,20 +77,8 @@
                              loading="lazy"
                              decoding="async">
                     </div>
-                    <div class="world-panel">
-                        <h2>Elektro</h2>
-                        <p>Interaktivní výukové aplikace pro odborný výcvik a elektrotechniku.</p>
-                        <div class="world-links">
-                            <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-plug"></i> Aplikace pro elektrikáře
-                            </a>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- World D: TVORBA MATERIÁLŮ -->
-                <section id="world-library" class="scene-layer theme-world world-library">
-                    <div class="world-visual" aria-hidden="true">
+                    <div class="world-node world-library" id="world-library">
                         <img src="assets/immersive-home/07-library-world.png"
                              alt=""
                              width="1600"
@@ -136,23 +86,8 @@
                              loading="lazy"
                              decoding="async">
                     </div>
-                    <div class="world-panel">
-                        <h2>Tvorba materiálů</h2>
-                        <p>Nástroje pro rychlou tvorbu přehledných výukových materiálů.</p>
-                        <div class="world-links">
-                            <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-chart-pie"></i> Generátor pro infografiku
-                            </a>
-                            <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-person-chalkboard"></i> Generátor pro prezentace
-                            </a>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- World E: AUDIO A VIDEO -->
-                <section id="world-media" class="scene-layer theme-world world-media">
-                    <div class="world-visual" aria-hidden="true">
+                    <div class="world-node world-media" id="world-media">
                         <img src="assets/immersive-home/08-media-world.png"
                              alt=""
                              width="1600"
@@ -160,26 +95,107 @@
                              loading="lazy"
                              decoding="async">
                     </div>
-                    <div class="world-panel">
-                        <h2>Audio a video</h2>
-                        <p>Promyšlená zadání pro tvorbu vzdělávacího audia a videa.</p>
-                        <div class="world-links">
-                            <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-video"></i> Generátor pro audio/video
-                            </a>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- Final Outro Panel (Chapter 7) -->
-                <div class="scene-layer theme-world scene-outro-panel">
-                    <div class="world-panel outro-panel-content">
-                        <h2>Všechny cesty jsou připraveny</h2>
-                        <p>Prohlédněte si všechny cesty a vyberte si ten správný nástroj pro vaši výuku.</p>
-                        <div class="world-links">
-                            <a href="#content-start" class="btn-primary scene-cta-outro">Prohlédnout cesty</a>
+                </div>
+
+                <!-- Textové callouty a ovládací prvky (stabilní viewport overlay) -->
+                <div class="chapter-overlay-layer">
+
+                    <!-- Intro panel -->
+                    <article class="chapter-callout callout-intro scene-intro">
+                        <div class="intro-content">
+                            <h1>Učitelský rozcestník</h1>
+                            <p class="lead">Kudy dnes povedete výuku?</p>
+                            <p class="description">Vyberte si cestu k nástrojům, materiálům a aplikacím, které můžete rovnou použít ve třídě.</p>
+                            <a href="#world-ai" class="btn-primary scene-cta">Vydejte se po cestě</a>
                         </div>
-                    </div>
+                    </article>
+
+                    <!-- World AI callout -->
+                    <article class="chapter-callout callout-ai">
+                        <div class="world-panel">
+                            <h2>AI a asistenti</h2>
+                            <p>AI pomocníci, praktické návody a nástroje pro přípravu výuky.</p>
+                            <div class="world-links">
+                                <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-regular fa-file-code"></i> Přehled asistentů
+                                </a>
+                                <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-regular fa-lightbulb"></i> NotebookLM průvodce
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- World Language callout -->
+                    <article class="chapter-callout callout-language">
+                        <div class="world-panel">
+                            <h2>Angličtina</h2>
+                            <p>Slovní zásoba, procvičování a interaktivní aktivity do hodin angličtiny.</p>
+                            <div class="world-links">
+                                <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-solid fa-bolt"></i> Maturita Solutions
+                                </a>
+                                <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-solid fa-graduation-cap"></i> Cvičení do angličtiny
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- World Electric callout -->
+                    <article class="chapter-callout callout-electric">
+                        <div class="world-panel">
+                            <h2>Elektro</h2>
+                            <p>Interaktivní výukové aplikace pro odborný výcvik a elektrotechniku.</p>
+                            <div class="world-links">
+                                <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-solid fa-plug"></i> Aplikace pro elektrikáře
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- World Library callout -->
+                    <article class="chapter-callout callout-library">
+                        <div class="world-panel">
+                            <h2>Tvorba materiálů</h2>
+                            <p>Nástroje pro rychlou tvorbu přehledných výukových materiálů.</p>
+                            <div class="world-links">
+                                <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-solid fa-chart-pie"></i> Generátor pro infografiku
+                                </a>
+                                <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-solid fa-person-chalkboard"></i> Generátor pro prezentace
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- World Media callout -->
+                    <article class="chapter-callout callout-media">
+                        <div class="world-panel">
+                            <h2>Audio a video</h2>
+                            <p>Promyšlená zadání pro tvorbu vzdělávacího audia a videa.</p>
+                            <div class="world-links">
+                                <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
+                                    <i class="fa-solid fa-video"></i> Generátor pro audio/video
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Outro callout -->
+                    <article class="chapter-callout callout-outro">
+                        <div class="world-panel outro-panel-content">
+                            <h2>Všechny cesty jsou připraveny</h2>
+                            <p>Prohlédněte si všechny cesty a vyberte si ten správný nástroj pro vaši výuku.</p>
+                            <div class="world-links">
+                                <a href="#content-start" class="btn-primary scene-cta-outro">Prohlédnout cesty</a>
+                            </div>
+                        </div>
+                    </article>
+
                 </div>
 
                 <!-- Scroll cue (indicator) -->
@@ -187,7 +203,6 @@
                     <span class="scroll-cue-text">Scrollujte pro průchod krajinou</span>
                     <span class="scroll-cue-arrow">↓</span>
                 </div>
-            </div>
         </div>
     </div>
 

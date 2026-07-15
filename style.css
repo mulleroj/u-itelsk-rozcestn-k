@@ -135,11 +135,34 @@ button:focus-visible,
     padding: 80px 20px;
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 40px;
+    z-index: 1;
 }
 
+/* Treat stage and overlay containers as layout-transparent on mobile */
+.world-stage,
+.chapter-overlay-layer {
+    display: contents;
+}
+
+/* Ordering elements for vertical stack on mobile/fallback */
+.callout-intro { order: 1; }
+.scene-crossroads { order: 2; }
+.world-ai { order: 3; }
+.callout-ai { order: 4; }
+.world-language { order: 5; }
+.callout-language { order: 6; }
+.world-electric { order: 7; }
+.callout-electric { order: 8; }
+.world-library { order: 9; }
+.callout-library { order: 10; }
+.world-media { order: 11; }
+.callout-media { order: 12; }
+.callout-outro { order: 13; }
+
 /* Show background-landscape asset as a subtle atmospheric layer in mobile/fallback mode */
-.scene-bg {
+.scene-background {
+    order: 0;
     display: block;
     position: absolute;
     top: 0;
@@ -152,10 +175,14 @@ button:focus-visible,
     z-index: 0;
 }
 
-.scene-bg .bg-img {
+.scene-background .bg-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.scene-atmosphere {
+    display: none;
 }
 
 /* Scroll indicator hidden in mobile/fallback */
@@ -221,7 +248,7 @@ button:focus-visible,
 }
 
 /* Character layer in mobile/fallback */
-.scene-characters {
+.scene-crossroads {
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -237,37 +264,20 @@ button:focus-visible,
     aspect-ratio: 3/4;
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
 }
-
-/* Theme Worlds in mobile/fallback (Flow stack list) */
-.theme-world {
+/* Theme Worlds in mobile/fallback */
+.world-node {
     width: 100%;
-    max-width: 750px;
-    margin: 0 auto;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-glow);
-    border-radius: 16px;
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-    text-align: center;
-}
-
-.world-visual {
-    width: 150px;
-    height: auto;
-    aspect-ratio: 4/3;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 }
 
-.world-visual img {
-    max-width: 100%;
-    max-height: 100%;
+.world-node img {
+    max-width: 260px;
+    height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.5));
 }
 
 .world-panel h2 {
@@ -326,154 +336,246 @@ button:focus-visible,
         overflow-x: hidden;
     }
 
-    html.gsap-ready .immersive-scene {
+    /* Pinned fullscreen camera viewport */
+    html.gsap-ready .immersive-camera {
         position: sticky;
         top: 0;
+        left: 0;
+        width: 100vw;
         height: 100vh;
-        width: 100%;
         overflow: hidden;
+        background-color: var(--bg-dark);
         display: block;
         padding: 0;
-        background-color: var(--bg-dark);
     }
 
-    html.gsap-ready .scene-layer {
+    /* Large coordinate-based spatial stage */
+    html.gsap-ready .world-stage {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 220vw;
+        height: 150vh;
+        transform-origin: 0 0;
+        will-change: transform;
+        z-index: 1;
+        display: block;
+    }
+
+    /* Background image layer */
+    html.gsap-ready .scene-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        will-change: transform;
+    }
+
+    html.gsap-ready .scene-background .bg-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Light mist or lighting atmosphere overlay */
+    html.gsap-ready .scene-atmosphere {
+        display: block;
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         pointer-events: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        z-index: 2;
+        background: radial-gradient(circle at 50% 65%, rgba(14, 36, 45, 0.3) 0%, rgba(4, 10, 12, 0.75) 100%);
     }
 
-    /* Active background layer styling */
-    html.gsap-ready .scene-bg {
-        display: block;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
-    }
-
-    html.gsap-ready .scene-bg .bg-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transform: scale(1.05); /* slightly zoomed for smooth entry */
-        transition: none;
-    }
-
-    /* Intro panel centered overlay */
-    html.gsap-ready .scene-intro {
-        z-index: 10;
-        pointer-events: auto;
-        opacity: 1;
-    }
-
-    html.gsap-ready .scene-intro .intro-content {
-        max-width: 650px;
-        text-align: center;
-        background: rgba(4, 10, 12, 0.8);
-        padding: 40px;
-        border-radius: 16px;
-        border: 1px solid rgba(211, 158, 0, 0.2);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-    }
-
-    /* Characters overlay */
-    /* Characters overlay (centered group aligned with the road in landscape background) */
-    html.gsap-ready .scene-characters {
+    /* Crossroads group on the road */
+    html.gsap-ready .scene-crossroads {
+        position: absolute;
+        left: 50%;
+        top: 70%;
+        transform: translate(-50%, -100%);
         display: flex;
         justify-content: center;
         align-items: flex-end;
-        gap: 60px; /* balanced spacing between them */
-        z-index: 5;
-        position: absolute;
-        bottom: 8%; /* visually matches the horizon road placement */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 960px;
-        height: 100%;
+        gap: 50px;
+        width: auto;
+        z-index: 3;
         pointer-events: none;
     }
 
     html.gsap-ready .char-eduobot {
-        height: 61vh; /* 58-64% of viewport height */
+        height: 58vh;
         width: auto;
         aspect-ratio: 3/4;
-        transform-origin: bottom center;
-        opacity: 0;
-        transform: translateY(80px) scale(0.7);
+        filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
     }
 
     html.gsap-ready .char-signpost {
-        height: 55vh; /* 52-58% of viewport height */
+        height: 52vh;
         width: auto;
         aspect-ratio: 3/4;
-        transform-origin: bottom center;
-        opacity: 0;
-        transform: translateY(80px) scale(0.7);
+        filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
     }
 
-    /* Cinematic theme worlds styling */
-    html.gsap-ready .theme-world {
-        z-index: 8;
+    /* World Nodes (Visual only on stage) */
+    html.gsap-ready .world-node {
+        position: absolute;
+        width: 32vw;
+        height: auto;
+        aspect-ratio: 4/3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: translate(-50%, -50%) scale(var(--world-scale, 1));
+        z-index: 4;
+        pointer-events: none;
+
+        /* Default inactive state: dimmed and low brightness/saturation */
+        opacity: 0.35;
+        filter: brightness(0.6) saturate(0.6) blur(1px);
+        transition: opacity 0.8s ease, filter 0.8s ease;
+        will-change: opacity, filter;
+    }
+
+    html.gsap-ready .world-node img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.75));
+    }
+
+    /* Active world node styling: high contrast and warm glow */
+    html.gsap-ready .world-node.active-world {
+        opacity: 1.0;
+        filter: brightness(1.15) saturate(1.0) drop-shadow(0 0 45px rgba(211, 158, 0, 0.25));
+        transform: translate(-50%, -50%) scale(calc(var(--world-scale, 1) * 1.08));
+        z-index: 5;
+    }
+
+    /* Precise world coordinates on stage (S-curve layout) */
+    html.gsap-ready .world-ai { --world-scale: 0.90; left: 27%; top: 57%; }
+    html.gsap-ready .world-language { --world-scale: 0.72; left: 18%; top: 37%; }
+    html.gsap-ready .world-electric { --world-scale: 0.90; left: 48%; top: 31%; }
+    html.gsap-ready .world-library { --world-scale: 0.72; left: 72%; top: 38%; }
+    html.gsap-ready .world-media { --world-scale: 0.60; left: 84%; top: 20%; }
+
+    /* Floating Viewport Text Overlay Layer (Stable Scale) */
+    html.gsap-ready .chapter-overlay-layer {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 10%;
-        max-width: 100%;
-        border-radius: 0;
-        border: none;
-        background-color: transparent;
+        pointer-events: none;
+        z-index: 10;
+        display: block;
+    }
+
+    /* Cinematic text callouts positioned in empty spaces of the viewport */
+    html.gsap-ready .chapter-callout {
+        position: absolute;
+        max-width: 380px;
+        width: 100%;
         opacity: 0;
         visibility: hidden;
+        pointer-events: none;
+        transition: none; /* Controlled by GSAP autoAlpha timeline */
     }
 
-    /* Alternating worlds visual placement */
-    html.gsap-ready .theme-world.world-language,
-    html.gsap-ready .theme-world.world-library {
-        flex-direction: row-reverse;
+    html.gsap-ready .chapter-callout.active-callout {
+        pointer-events: auto;
     }
 
-    html.gsap-ready .world-visual {
-        width: 48%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    /* Viewport overlays placement matrix */
+    html.gsap-ready .callout-intro {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 650px;
+        pointer-events: auto;
+        opacity: 1;
+        visibility: visible;
     }
 
-    html.gsap-ready .world-visual img {
-        max-width: 80%;
-        max-height: 70%;
-        object-fit: contain;
-        filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+    html.gsap-ready .callout-intro .intro-content {
+        text-align: center;
+        background: rgba(4, 10, 12, 0.85);
+        padding: 40px;
+        border-radius: 16px;
+        border: 1px solid rgba(211, 158, 0, 0.25);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    /* AI callout on the right (AI node is at left 27%) */
+    html.gsap-ready .callout-ai {
+        right: 12%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Language callout on the right (Language node is at left 18%) */
+    html.gsap-ready .callout-language {
+        right: 15%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Electric callout on the left (Electric node is at center 48%) */
+    html.gsap-ready .callout-electric {
+        left: 12%;
+        top: 45%;
+        transform: translateY(-50%);
+    }
+
+    /* Library callout on the left (Library node is at right 72%) */
+    html.gsap-ready .callout-library {
+        left: 12%;
+        top: 45%;
+        transform: translateY(-50%);
+    }
+
+    /* Media callout on the left (Media node is at right 84%) */
+    html.gsap-ready .callout-media {
+        left: 15%;
+        top: 45%;
+        transform: translateY(-50%);
+    }
+
+    /* Outro callout centered */
+    html.gsap-ready .callout-outro {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 480px;
+    }
+
+    html.gsap-ready .callout-outro .outro-panel-content {
+        text-align: center !important;
+        background: rgba(6, 15, 18, 0.94);
+        border: 1px solid rgba(211, 158, 0, 0.4);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 
     html.gsap-ready .world-panel {
-        width: 44%;
-        max-width: 440px;
-        background: rgba(6, 15, 18, 0.9);
+        width: 100%;
+        background: rgba(6, 15, 18, 0.94);
         border: 1px solid rgba(211, 158, 0, 0.35);
         border-radius: 12px;
-        padding: 35px;
+        padding: 30px;
         text-align: left;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        pointer-events: auto;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
     }
 
     html.gsap-ready .world-panel h2 {
@@ -484,38 +586,14 @@ button:focus-visible,
         -webkit-text-fill-color: transparent;
     }
 
-    html.gsap-ready .world-links {
-        max-width: 100%;
-        margin: 0;
+    html.gsap-ready .world-panel p {
+        font-size: 15px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 24px;
     }
 
-    /* Outro panel styling for Chapter 7 */
-    html.gsap-ready .scene-outro-panel {
-        z-index: 9;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    html.gsap-ready .outro-panel-content {
-        text-align: center !important;
-        max-width: 460px;
-        background: rgba(6, 15, 18, 0.92);
-        border: 1px solid rgba(211, 158, 0, 0.4);
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
-        pointer-events: auto;
-    }
-
-    /* Scroll Cue */
+    /* Scroll Cue indicator positioning */
     html.gsap-ready .scroll-cue {
         display: flex;
         position: absolute;
@@ -527,7 +605,7 @@ button:focus-visible,
         gap: 6px;
         opacity: 0.8;
         z-index: 12;
-        pointer-events: none; /* Do not intercept clicks on active panels */
+        pointer-events: none;
     }
 
     html.gsap-ready .scroll-cue-text {
