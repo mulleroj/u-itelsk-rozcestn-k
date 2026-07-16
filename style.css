@@ -514,15 +514,28 @@ footer {
 }
 
 /* On mobile/no-JS, only the intro panel is shown below the image banner */
-.chapter-callout.callout-intro {
+html:not(.gsap-ready) .chapter-callout.callout-intro {
     display: block;
     position: relative;
     width: 100%;
     max-width: 100%;
-    opacity: 1 !important;
-    visibility: visible !important;
+    opacity: 1;
+    visibility: visible;
     pointer-events: auto;
-    transform: none !important;
+    transform: none;
+}
+
+@media (max-width: 1024px) {
+    html:not(.gsap-ready) .chapter-callout.callout-intro {
+        display: block;
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: none;
+    }
 }
 
 .callout-intro .intro-content {
@@ -616,22 +629,25 @@ footer {
         inset: 0;
         width: 100vw;
         height: 100vh;
-        transform-origin: 0 0;
-        will-change: transform;
+        overflow: visible;
         z-index: 3;
         display: block;
     }
 
-    html.gsap-ready .master-scene-image {
+    html.gsap-ready .master-map {
         position: absolute;
+        transform-origin: 0 0;
+        will-change: transform;
+        z-index: 1;
+    }
+
+    html.gsap-ready .master-scene-image {
         display: block;
-        object-fit: cover;
-        object-position: center center;
-        max-height: none;
         width: 100%;
         height: 100%;
+        object-fit: fill;
+        max-height: none;
         inset: 0;
-        z-index: 1;
     }
 
     /* Floating Viewport Text Overlay Layer */
@@ -667,8 +683,8 @@ footer {
     /* Cinematic text callouts positioned in safe viewport zones */
     html.gsap-ready .chapter-callout {
         position: absolute;
-        width: min(320px, 30vw);
-        max-width: 320px;
+        width: auto;
+        max-width: none;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -678,8 +694,8 @@ footer {
     /* Restrict width on medium desktops to avoid layout congestion */
     @media (max-width: 1366px) {
         html.gsap-ready .chapter-callout {
-            width: 280px;
-            max-width: 280px;
+            width: auto;
+            max-width: none;
         }
     }
 
@@ -688,14 +704,14 @@ footer {
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        max-width: 560px;
+        max-width: 460px;
         width: 100%;
     }
 
     html.gsap-ready .callout-intro .intro-content {
         text-align: center;
         background: rgba(4, 10, 12, 0.94);
-        padding: 35px;
+        padding: 24px 28px;
         border-radius: 12px;
         border: 1px solid rgba(211, 158, 0, 0.3);
         backdrop-filter: blur(12px);
@@ -705,25 +721,25 @@ footer {
     }
 
     html.gsap-ready .callout-intro .intro-content h1 {
-        font-size: 38px;
+        font-size: 28px;
         color: #ffffff;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     html.gsap-ready .callout-intro .intro-content .lead {
-        font-size: 18px;
+        font-size: 16px;
         color: var(--accent-main);
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         font-weight: 600;
     }
 
     html.gsap-ready .callout-intro .intro-content .description {
-        font-size: 14px;
+        font-size: 13px;
         color: #cccccc;
-        margin-bottom: 25px;
-        max-width: 480px;
+        margin-bottom: 20px;
+        max-width: 400px;
         margin-left: auto;
         margin-right: auto;
         line-height: 1.5;
@@ -758,8 +774,8 @@ footer {
     /* AI and Language callouts (Cíl vlevo, panel vpravo) */
     html.gsap-ready .callout-ai,
     html.gsap-ready .callout-language {
-        left: 62%;
-        right: 8%;
+        left: 68%;
+        right: auto;
         top: 50%;
         transform: translateY(-50%);
     }
@@ -779,62 +795,36 @@ footer {
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        max-width: 420px;
-        width: 100%;
     }
 
-    html.gsap-ready .callout-outro .outro-panel-content {
-        text-align: center;
-        background: rgba(4, 10, 12, 0.94);
-        border: 1px solid rgba(211, 158, 0, 0.35);
-        padding: 35px;
-        border-radius: 12px;
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+    /* Small map label styles replacing big panels */
+    html.gsap-ready .map-label {
+        width: min(260px, 24vw);
+        max-width: 260px;
+        padding: 14px 16px;
+        background: rgba(4, 10, 12, 0.72);
+        border-left: 3px solid var(--accent-main);
+        border-radius: 4px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         pointer-events: auto;
     }
 
-    html.gsap-ready .callout-outro .outro-panel-content h2 {
-        font-size: 24px;
+    html.gsap-ready .map-label h2 {
+        font-size: 15px;
+        margin-bottom: 6px;
         color: #ffffff;
-        margin-bottom: 12px;
-    }
-
-    html.gsap-ready .callout-outro .outro-panel-content p {
-        font-size: 14px;
-        color: #cccccc;
-        margin-bottom: 25px;
-        line-height: 1.5;
-    }
-
-    /* Small dark panels for worlds */
-    html.gsap-ready .world-panel {
-        width: 100%;
-        background: rgba(4, 10, 12, 0.93);
-        border: 1px solid rgba(211, 158, 0, 0.28);
-        border-radius: 8px;
-        padding: 20px;
-        text-align: left;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        pointer-events: auto;
-    }
-
-    html.gsap-ready .world-panel h2 {
-        font-size: 20px;
-        margin-bottom: 8px;
-        color: var(--accent-main);
         text-transform: uppercase;
         letter-spacing: 1px;
+        font-weight: 700;
     }
 
-    html.gsap-ready .world-panel p {
-        font-size: 14px;
-        margin-bottom: 18px;
+    html.gsap-ready .map-label p {
+        font-size: 12px;
+        margin-bottom: 12px;
         color: #cccccc;
-        line-height: 1.5;
+        line-height: 1.4;
     }
 
     html.gsap-ready .world-links {
@@ -843,25 +833,27 @@ footer {
         gap: 8px;
     }
 
-    html.gsap-ready .world-link-btn {
-        display: flex;
+    html.gsap-ready .world-link-chip {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        height: 44px;
-        padding: 0 15px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        height: 40px;
+        padding: 0 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 4px;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 600;
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.04);
         transition: var(--transition);
         text-align: center;
+        width: 100%;
+        text-decoration: none;
+        box-sizing: border-box;
     }
 
-    html.gsap-ready .world-link-btn:hover {
-        background: rgba(211, 158, 0, 0.15);
+    html.gsap-ready .world-link-chip:hover {
+        background: rgba(211, 158, 0, 0.25);
         border-color: var(--accent-main);
         color: var(--accent-main);
     }
@@ -873,13 +865,15 @@ footer {
         color: #040a0c;
         font-weight: 700;
         border-radius: 4px;
-        padding: 12px 24px;
+        padding: 10px 20px;
         width: 100%;
-        max-width: 250px;
+        max-width: 220px;
         margin: 0 auto;
         display: block;
         text-align: center;
         transition: var(--transition);
+        text-decoration: none;
+        font-size: 13px;
     }
 
     html.gsap-ready .btn-primary.scene-cta:hover,
