@@ -12,20 +12,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Initialize Cinematic Master Journey
+    let masterJourneyInitialized = false;
+
+    function initMasterJourneyOnce() {
+        if (masterJourneyInitialized) return;
+        masterJourneyInitialized = true;
+        initMasterJourney();
+    }
+
     const img = document.querySelector('.master-scene-image');
     if (img) {
         if (typeof img.decode === 'function') {
-            img.decode().then(initMasterJourney).catch(() => initMasterJourney());
+            img.decode().then(initMasterJourneyOnce).catch(() => initMasterJourneyOnce());
         } else {
             if (img.complete) {
-                initMasterJourney();
+                initMasterJourneyOnce();
             } else {
-                img.addEventListener('load', initMasterJourney);
-                setTimeout(initMasterJourney, 1500); // Safe fallback
+                img.addEventListener('load', initMasterJourneyOnce);
+                setTimeout(initMasterJourneyOnce, 1500); // Safe fallback
             }
         }
     } else {
-        initMasterJourney();
+        initMasterJourneyOnce();
     }
 
     let scrollTriggerInstance = null;
@@ -147,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function initMasterJourney() {
         const isDesktop = window.innerWidth > 1024;
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const gsapAvailable = typeof gsap !== 'undefined';
+        const gsapAvailable = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
 
         if (!gsapAvailable || !isDesktop || prefersReduced) {
             // Clean up and use simple static fallback
@@ -417,6 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Remove debug hotspots
     function removeDebugHotspots() {
         document.querySelectorAll('.debug-hotspot').forEach(el => el.remove());
     }
