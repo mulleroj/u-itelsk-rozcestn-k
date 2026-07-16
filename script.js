@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             imageY: 0.60,
             viewportX: 0.50,
             viewportY: 0.55,
-            scale: 1.12,
+            scale: 1.06, // Reduced zoom to keep Eduobot and Crossroads sign fully visible
             hotspot: null
         },
         {
@@ -132,6 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         offsetX = (viewportWidth - renderedWidth) / 2;
         offsetY = (viewportHeight - renderedHeight) / 2;
+
+        const mapEl = document.querySelector('.master-map');
+        if (mapEl) {
+            mapEl.style.width = `${renderedWidth}px`;
+            mapEl.style.height = `${renderedHeight}px`;
+            mapEl.style.left = `${offsetX}px`;
+            mapEl.style.top = `${offsetY}px`;
+        }
     }
 
     function getCameraCoords(imageX, imageY, viewportX, viewportY, scale) {
@@ -141,12 +149,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const tx = (viewportX * window.innerWidth) - (pointX * scale);
         const ty = (viewportY * window.innerHeight) - (pointY * scale);
 
-        return { x: tx, y: ty };
+        // Clamp camera translation coordinates to avoid any black borders/edges
+        const minX = window.innerWidth - offsetX - (renderedWidth * scale);
+        const maxX = -offsetX;
+
+        const minY = window.innerHeight - offsetY - (renderedHeight * scale);
+        const maxY = -offsetY;
+
+        const clampedX = Math.min(Math.max(tx, minX), maxX);
+        const clampedY = Math.min(Math.max(ty, minY), maxY);
+
+        return { x: clampedX, y: clampedY };
     }
 
     function getChapterCoords(chapter) {
         if (chapter.id === 'intro' || chapter.id === 'outro') {
-            return { x: 0, y: 0, scale: 1.00 };
+            const coords = getCameraCoords(chapter.imageX, chapter.imageY, chapter.viewportX, chapter.viewportY, chapter.scale);
+            return { x: coords.x, y: coords.y, scale: chapter.scale };
         }
         const coords = getCameraCoords(chapter.imageX, chapter.imageY, chapter.viewportX, chapter.viewportY, chapter.scale);
         return { x: coords.x, y: coords.y, scale: chapter.scale };
@@ -174,10 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
             createDebugHotspots();
 
             // Set initial state of camera scene
-            gsap.set(".master-scene", {
-                x: 0,
-                y: 0,
-                scale: 1.00
+            gsap.set(".master-map", {
+                x: () => getChapterCoords(chapters[0]).x,
+                y: () => getChapterCoords(chapters[0]).y,
+                scale: chapters[0].scale
             });
             gsap.set(".chapter-callout", { autoAlpha: 0, pointerEvents: "none" });
             gsap.set(".callout-intro", { autoAlpha: 1, pointerEvents: "auto" });
@@ -203,84 +222,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Chapter 0 (Intro) -> Chapter 1 (Crossroads)
             tl.addLabel("intro")
-              .to(".callout-intro", { autoAlpha: 0, duration: 1.0 })
-              .to(".scroll-cue", { autoAlpha: 0, duration: 0.5 }, "-=1.0")
-              .to(".master-scene", {
+              .to(".callout-intro", { autoAlpha: 0, duration: 0.8 })
+              .to(".scroll-cue", { autoAlpha: 0, duration: 0.4 }, "-=0.8")
+              .to(".master-map", {
                   x: () => getChapterCoords(chapters[1]).x,
                   y: () => getChapterCoords(chapters[1]).y,
                   scale: chapters[1].scale,
                   duration: 2.0
-              }, "-=0.8")
-              .to(".callout-crossroads", { autoAlpha: 1, duration: 1.0 }, "-=0.5");
+              })
+              .to(".callout-crossroads", { autoAlpha: 1, duration: 0.8 });
 
             // Chapter 1 (Crossroads) -> Chapter 2 (AI)
             tl.addLabel("crossroads")
-              .to(".callout-crossroads", { autoAlpha: 0, duration: 1.0 })
-              .to(".master-scene", {
+              .to(".callout-crossroads", { autoAlpha: 0, duration: 0.8 })
+              .to(".master-map", {
                   x: () => getChapterCoords(chapters[2]).x,
                   y: () => getChapterCoords(chapters[2]).y,
                   scale: chapters[2].scale,
                   duration: 2.0
-              }, "-=0.8")
-              .to(".callout-ai", { autoAlpha: 1, duration: 1.0 }, "-=0.5");
+              })
+              .to(".callout-ai", { autoAlpha: 1, duration: 0.8 });
 
             // Chapter 2 (AI) -> Chapter 3 (Language)
             tl.addLabel("ai")
-              .to(".callout-ai", { autoAlpha: 0, duration: 1.0 })
-              .to(".master-scene", {
+              .to(".callout-ai", { autoAlpha: 0, duration: 0.8 })
+              .to(".master-map", {
                   x: () => getChapterCoords(chapters[3]).x,
                   y: () => getChapterCoords(chapters[3]).y,
                   scale: chapters[3].scale,
                   duration: 2.0
-              }, "-=0.8")
-              .to(".callout-language", { autoAlpha: 1, duration: 1.0 }, "-=0.5");
+              })
+              .to(".callout-language", { autoAlpha: 1, duration: 0.8 });
 
             // Chapter 3 (Language) -> Chapter 4 (Electric)
             tl.addLabel("language")
-              .to(".callout-language", { autoAlpha: 0, duration: 1.0 })
-              .to(".master-scene", {
+              .to(".callout-language", { autoAlpha: 0, duration: 0.8 })
+              .to(".master-map", {
                   x: () => getChapterCoords(chapters[4]).x,
                   y: () => getChapterCoords(chapters[4]).y,
                   scale: chapters[4].scale,
                   duration: 2.0
-              }, "-=0.8")
-              .to(".callout-electric", { autoAlpha: 1, duration: 1.0 }, "-=0.5");
+              })
+              .to(".callout-electric", { autoAlpha: 1, duration: 0.8 });
 
             // Chapter 4 (Electric) -> Chapter 5 (Library)
             tl.addLabel("electric")
-              .to(".callout-electric", { autoAlpha: 0, duration: 1.0 })
-              .to(".master-scene", {
+              .to(".callout-electric", { autoAlpha: 0, duration: 0.8 })
+              .to(".master-map", {
                   x: () => getChapterCoords(chapters[5]).x,
                   y: () => getChapterCoords(chapters[5]).y,
                   scale: chapters[5].scale,
                   duration: 2.0
-              }, "-=0.8")
-              .to(".callout-library", { autoAlpha: 1, duration: 1.0 }, "-=0.5");
+              })
+              .to(".callout-library", { autoAlpha: 1, duration: 0.8 });
 
             // Chapter 5 (Library) -> Chapter 6 (Media)
             tl.addLabel("library")
-              .to(".callout-library", { autoAlpha: 0, duration: 1.0 })
-              .to(".master-scene", {
+              .to(".callout-library", { autoAlpha: 0, duration: 0.8 })
+              .to(".master-map", {
                   x: () => getChapterCoords(chapters[6]).x,
                   y: () => getChapterCoords(chapters[6]).y,
                   scale: chapters[6].scale,
                   duration: 2.0
-              }, "-=0.8")
-              .to(".callout-media", { autoAlpha: 1, duration: 1.0 }, "-=0.5");
+              })
+              .to(".callout-media", { autoAlpha: 1, duration: 0.8 });
 
             // Chapter 6 (Media) -> Chapter 7 (Outro)
             tl.addLabel("media")
-              .to(".callout-media", { autoAlpha: 0, duration: 1.0 })
-              .to(".master-scene", {
+              .to(".callout-media", { autoAlpha: 0, duration: 0.8 })
+              .to(".master-map", {
                   x: () => getChapterCoords(chapters[7]).x,
                   y: () => getChapterCoords(chapters[7]).y,
                   scale: chapters[7].scale,
                   duration: 2.0
-              }, "-=0.8")
-              .to(".callout-outro", { autoAlpha: 1, duration: 1.0 }, "-=0.5");
+              })
+              .to(".callout-outro", { autoAlpha: 1, duration: 0.8 });
 
             tl.addLabel("outro")
-              .to(".callout-outro", { autoAlpha: 0, duration: 1.0 });
+              .to(".callout-outro", { autoAlpha: 0, duration: 0.8 });
 
             // Resize listener wrapper inside MatchMedia context
             window.addEventListener('resize', onWindowResize);
@@ -291,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tl = null;
                 document.documentElement.classList.remove('gsap-ready');
                 gsap.killTweensOf("*");
-                gsap.set([".master-scene", ".master-scene-image", ".chapter-callout", ".scroll-cue"], { clearProps: "all" });
+                gsap.set([".master-map", ".master-scene-image", ".chapter-callout", ".scroll-cue"], { clearProps: "all" });
                 removeDebugHotspots();
             };
         });
@@ -326,9 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // QA Collision and Gap Measurement Checks
     function performCollisionChecks() {
-        const curX = gsap.getProperty(".master-scene", "x") || 0;
-        const curY = gsap.getProperty(".master-scene", "y") || 0;
-        const curScale = gsap.getProperty(".master-scene", "scale") || 1.0;
+        const curX = gsap.getProperty(".master-map", "x") || 0;
+        const curY = gsap.getProperty(".master-map", "y") || 0;
+        const curScale = gsap.getProperty(".master-map", "scale") || 1.0;
 
         chapters.forEach(c => {
             if (!c.hotspot) return;
@@ -393,15 +412,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper functions for visual debug hotspots
     function createDebugHotspots() {
-        const sceneEl = document.querySelector('.master-scene');
-        if (!sceneEl) return;
+        const mapEl = document.querySelector('.master-map');
+        if (!mapEl) return;
 
         chapters.forEach(c => {
             if (!c.hotspot) return;
             const d = document.createElement('div');
             d.className = 'debug-hotspot';
             d.id = `debug-hotspot-${c.id}`;
-            sceneEl.appendChild(d);
+            mapEl.appendChild(d);
         });
         updateDebugHotspots();
     }
