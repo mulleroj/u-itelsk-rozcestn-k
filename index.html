@@ -12,33 +12,159 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- MASTER CINEMATIC JOURNEY -->
+    <div class="master-journey" id="immersive-start">
+        <p class="visually-hidden">Interaktivní mapa výukových oblastí s cestami k AI nástrojům, angličtině, elektrotechnice, tvorbě materiálů a médiím.</p>
+
+        <div class="master-camera">
+
+            <!-- Master Scene Image Map Viewport -->
+            <div class="master-scene">
+                <div class="master-map">
+                    <img src="assets/immersive-home/09-master-world-map.png"
+                         class="master-scene-image"
+                         width="2752"
+                         height="1536"
+                         loading="eager"
+                         fetchpriority="high"
+                         decoding="async"
+                         alt="">
+                </div>
+            </div>
+
+            <!-- Overlay Layer for Compact Panels -->
+            <div class="chapter-overlay-layer">
+
+                <!-- Intro Callout -->
+                <article class="chapter-callout callout-intro">
+                    <div class="intro-content">
+                        <h1>Učitelský rozcestník</h1>
+                        <p class="lead">Kudy dnes povedete výuku?</p>
+                        <p class="description">Vyberte si cestu k nástrojům, materiálům a aplikacím, které můžete ihned použít ve třídě.</p>
+                        <button type="button" class="btn-primary scene-cta" data-journey-target="crossroads">
+                            Vyrazit na cestu
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Crossroads Callout (No panel on right, just small label top-left) -->
+                <article class="chapter-callout callout-crossroads">
+                    <div class="crossroads-badge">
+                        <span class="badge-text">Rozcestí témat</span>
+                    </div>
+                </article>
+
+                <!-- AI Callout (Target Left, Callout Right) -->
+                <article class="chapter-callout callout-ai">
+                    <div class="map-label">
+                        <h2>AI a asistenti</h2>
+                        <p>AI pomocníci a praktické návody.</p>
+                        <div class="world-links">
+                            <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Přehled asistentů
+                            </a>
+                            <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                NotebookLM průvodce
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Language Callout (Target Left, Callout Right) -->
+                <article class="chapter-callout callout-language">
+                    <div class="map-label">
+                        <h2>Angličtina</h2>
+                        <p>Procvičování slovíček a aktivit.</p>
+                        <div class="world-links">
+                            <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Maturita Solutions
+                            </a>
+                            <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Cvičení do angličtiny
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Electric Callout (Target Right, Callout Left) -->
+                <article class="chapter-callout callout-electric">
+                    <div class="map-label">
+                        <h2>Elektro</h2>
+                        <p>Simulátory pro elektrikáře.</p>
+                        <div class="world-links">
+                            <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Aplikace pro elektrikáře
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Library Callout (Target Right, Callout Left) -->
+                <article class="chapter-callout callout-library">
+                    <div class="map-label">
+                        <h2>Tvorba materiálů</h2>
+                        <p>Rychlá příprava podkladů.</p>
+                        <div class="world-links">
+                            <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Infografika
+                            </a>
+                            <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Prezentace
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Media Callout (Target Right, Callout Left) -->
+                <article class="chapter-callout callout-media">
+                    <div class="map-label">
+                        <h2>Audio a video</h2>
+                        <p>Zadání pro moderní výstupy.</p>
+                        <div class="world-links">
+                            <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Audio/video generátor
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Outro Callout -->
+                <article class="chapter-callout callout-outro">
+                    <div class="map-label outro-label-content">
+                        <h2>Všechny cesty jsou připraveny</h2>
+                        <p>Vyberte si ten správný nástroj pro výuku.</p>
+                        <div class="world-links">
+                            <a href="#content-start" class="btn-primary scene-cta-outro">Zobrazit přehled cílů</a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+
+            <!-- Scroll cue (indicator) -->
+            <div class="scroll-cue" aria-hidden="true">
+                <span class="scroll-cue-text">Scrollujte pro průchod krajinou</span>
+                <span class="scroll-cue-arrow">↓</span>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN CONTAINER -->
     <main class="container">
         
-        <!-- HEADER / HERO -->
-        <header class="hero">
-            <div class="hero-content">
-                <a href="#asistenti" class="hero-subtle-cta">
-                    <span class="subtle-cta-text">Každá cesta začíná jedním kliknutím</span>
-                    <span class="subtle-cta-hint">Pokračujte tlačítkem níže <span class="subtle-arrow">↙</span></span>
-                </a>
+        <!-- ============================================================
+             CONTENT OVERVIEW – Anchor for normal view grid
+             ============================================================ -->
+        <div class="overview-section-header">
+            <div class="container">
+                <span class="section-subtitle">PŘEHLED VŠECH CEST</span>
+                <h2>Všechny cesty na jednom místě</h2>
                 <div class="accent-line"></div>
-                <h1>UČITELSKÝ<br>ROZCESTNÍK</h1>
-                <div class="hero-description">
-                    <p class="lead-text"><strong>Tohle není jen další web s odkazy.</strong><br>Tohle je rozcestí do moderní výuky.</p>
-                    <p>Na jednom místě tu najdete návody, přehledy, výukové materiály a aplikace vytvořené pomocí AI a vibe codingu. Všechno je navržené tak, aby to nebyla teorie do šuplíku, ale reálně použitelné věci pro výuku.</p>
-                </div>
-                
-                <a href="#asistenti" class="btn-primary">ZAČÍT OBJEVOVAT</a>
             </div>
-            
-            <div class="hero-image">
-                <img src="openart-image_1774128708225_f26da913_1774128708815_6b704815.jpg" alt="Eduobot s rozcestníkem" class="hero-img">
-            </div>
-        </header>
+        </div>
 
         <!-- FEATURES SECTION -->
-        <section class="features-section">
+        <section id="content-start" class="features-section" tabindex="-1">
             <div class="features-intro">
                 <span class="section-subtitle">SMĚRY ROZCESTNÍKU</span>
                 <h2>Vyberte si, kam dál</h2>
@@ -147,6 +273,9 @@
         </div>
     </footer>
 
+    <!-- GSAP & ScrollTrigger CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -453,8 +453,469 @@ footer {
     .features-grid {
         grid-template-columns: 1fr;
     }
-    
-    .hero h1 {
-        font-size: 40px;
+}
+
+/* ==========================================================================
+   VISUALLY HIDDEN ACCESSIBILITY COMPONENT
+   ========================================================================== */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ==========================================================================
+   DEFAULT NO-JS / MOBILE STATIC LAYOUT (ALL WIDTHS, OVERRIDDEN BY GSAP-READY)
+   ========================================================================== */
+.master-journey {
+    display: block;
+    background: transparent;
+    width: 100%;
+}
+
+.master-camera {
+    display: block;
+    width: 100%;
+    position: relative;
+}
+
+.master-scene {
+    display: block;
+    width: 100%;
+    position: relative;
+}
+
+.master-scene-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.chapter-overlay-layer {
+    display: block;
+    position: relative;
+    padding: 30px 15px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.chapter-callout {
+    display: none;
+}
+
+/* On mobile/no-JS, only the intro panel is shown below the image banner */
+html:not(.gsap-ready) .chapter-callout.callout-intro {
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+}
+
+@media (max-width: 1024px) {
+    html:not(.gsap-ready) .chapter-callout.callout-intro {
+        display: block;
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: none;
     }
+}
+
+.callout-intro .intro-content {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 35px 25px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.callout-intro .intro-content h1 {
+    font-size: 32px;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.callout-intro .intro-content .lead {
+    font-size: 16px;
+    color: var(--accent-main);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.callout-intro .intro-content .description {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+}
+
+.scroll-cue {
+    display: none;
+}
+
+.overview-section-header {
+    padding: 60px 0 20px 0;
+    text-align: center;
+}
+
+.overview-section-header h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.overview-section-header .accent-line {
+    margin: 10px auto 0 auto;
+}
+
+/* ==========================================================================
+   DESKTOP CINEMATIC STICKY LAYOUT (GSAP-READY & WIDTH > 1024px)
+   ========================================================================== */
+@media (min-width: 1025px) {
+    /* Activated only when JavaScript successfully initialized GSAP */
+    html.gsap-ready,
+    html.gsap-ready body {
+        overflow-x: hidden;
+        background-color: #040a0c;
+    }
+
+    html.gsap-ready .overview-section-header h2 {
+        color: #ffffff;
+    }
+
+    html.gsap-ready .overview-section-header .section-subtitle {
+        color: var(--accent-main);
+    }
+
+    /* Pinned fullscreen camera viewport */
+    html.gsap-ready .master-journey {
+        display: block;
+        position: relative;
+        width: 100%;
+        background-color: #040a0c;
+    }
+
+    html.gsap-ready .master-camera {
+        position: sticky;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        display: block;
+        padding: 0;
+        background-color: #040a0c;
+    }
+
+    /* Target container for transform translation & scale */
+    html.gsap-ready .master-scene {
+        position: absolute;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: visible;
+        z-index: 3;
+        display: block;
+    }
+
+    html.gsap-ready .master-map {
+        position: absolute;
+        transform-origin: 0 0;
+        will-change: transform;
+        z-index: 1;
+    }
+
+    html.gsap-ready .master-scene-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        max-height: none;
+        inset: 0;
+    }
+
+    /* Floating Viewport Text Overlay Layer */
+    html.gsap-ready .chapter-overlay-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+        display: block;
+        padding: 0;
+        max-width: none;
+        margin: 0;
+    }
+
+    /* Bounding control debug hotspots */
+    .debug-hotspot {
+        position: absolute;
+        border: 2px dashed rgba(211, 158, 0, 0.65);
+        background: rgba(211, 158, 0, 0.08);
+        pointer-events: none;
+        z-index: 8;
+        box-sizing: border-box;
+        display: none;
+    }
+
+    body.show-hotspots .debug-hotspot {
+        display: block;
+    }
+
+    /* Cinematic text callouts positioned in safe viewport zones */
+    html.gsap-ready .chapter-callout {
+        position: absolute;
+        width: auto;
+        max-width: none;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        display: block;
+    }
+
+    /* Restrict width on medium desktops to avoid layout congestion */
+    @media (max-width: 1366px) {
+        html.gsap-ready .chapter-callout {
+            width: auto;
+            max-width: none;
+        }
+    }
+
+    /* Viewport overlays placement matrix */
+    html.gsap-ready .callout-intro {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 460px;
+        width: 100%;
+    }
+
+    html.gsap-ready .callout-intro .intro-content {
+        text-align: center;
+        background: rgba(4, 10, 12, 0.94);
+        padding: 24px 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(211, 158, 0, 0.3);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        pointer-events: auto;
+    }
+
+    html.gsap-ready .callout-intro .intro-content h1 {
+        font-size: 28px;
+        color: #ffffff;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    html.gsap-ready .callout-intro .intro-content .lead {
+        font-size: 16px;
+        color: var(--accent-main);
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    html.gsap-ready .callout-intro .intro-content .description {
+        font-size: 13px;
+        color: #cccccc;
+        margin-bottom: 20px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.5;
+    }
+
+    /* Crossroads small badge (Top-Left) */
+    html.gsap-ready .callout-crossroads {
+        left: 30px;
+        top: 30px;
+        width: auto;
+        max-width: none;
+    }
+
+    html.gsap-ready .crossroads-badge {
+        background: rgba(4, 10, 12, 0.85);
+        border: 1px solid rgba(211, 158, 0, 0.35);
+        border-radius: 6px;
+        padding: 8px 16px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    html.gsap-ready .crossroads-badge .badge-text {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent-main);
+    }
+
+    /* AI and Language callouts (Cíl vlevo, panel vpravo) */
+    html.gsap-ready .callout-ai,
+    html.gsap-ready .callout-language {
+        left: 68%;
+        right: auto;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Electric, Library and Media callouts (Cíl vpravo, panel vlevo) */
+    html.gsap-ready .callout-electric,
+    html.gsap-ready .callout-library,
+    html.gsap-ready .callout-media {
+        left: 8%;
+        right: auto;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Outro callout centered */
+    html.gsap-ready .callout-outro {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Small map label styles replacing big panels */
+    html.gsap-ready .map-label {
+        width: min(260px, 24vw);
+        max-width: 260px;
+        padding: 14px 16px;
+        background: rgba(4, 10, 12, 0.72);
+        border-left: 3px solid var(--accent-main);
+        border-radius: 4px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        pointer-events: auto;
+    }
+
+    html.gsap-ready .map-label h2 {
+        font-size: 15px;
+        margin-bottom: 6px;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+
+    html.gsap-ready .map-label p {
+        font-size: 12px;
+        margin-bottom: 12px;
+        color: #cccccc;
+        line-height: 1.4;
+    }
+
+    html.gsap-ready .world-links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    html.gsap-ready .world-link-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        padding: 0 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #ffffff;
+        transition: var(--transition);
+        text-align: center;
+        width: 100%;
+        text-decoration: none;
+        box-sizing: border-box;
+    }
+
+    html.gsap-ready .world-link-chip:hover {
+        background: rgba(211, 158, 0, 0.25);
+        border-color: var(--accent-main);
+        color: var(--accent-main);
+    }
+
+    html.gsap-ready .btn-primary.scene-cta,
+    html.gsap-ready .btn-primary.scene-cta-outro {
+        background: var(--accent-main);
+        border: 2px solid var(--accent-main);
+        color: #040a0c;
+        font-weight: 700;
+        border-radius: 4px;
+        padding: 10px 20px;
+        width: 100%;
+        max-width: 220px;
+        margin: 0 auto;
+        display: block;
+        text-align: center;
+        transition: var(--transition);
+        text-decoration: none;
+        font-size: 13px;
+    }
+
+    html.gsap-ready .btn-primary.scene-cta:hover,
+    html.gsap-ready .btn-primary.scene-cta-outro:hover {
+        background: #ffffff;
+        border-color: #ffffff;
+        color: #040a0c;
+    }
+
+    /* Scroll Cue */
+    html.gsap-ready .scroll-cue {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: #ffffff;
+        pointer-events: none;
+        z-index: 10;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+    }
+
+    html.gsap-ready .scroll-cue-text {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    html.gsap-ready .scroll-cue-arrow {
+        font-size: 18px;
+        animation: bounce 2s infinite;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-8px); }
+    60% { transform: translateY(-4px); }
 }
