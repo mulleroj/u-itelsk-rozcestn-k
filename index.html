@@ -18,16 +18,18 @@
 
         <div class="master-camera">
 
-            <!-- Master Scene Image Map -->
+            <!-- Master Scene Image Map Viewport -->
             <div class="master-scene">
-                <img src="assets/immersive-home/09-master-world-map.png"
-                     class="master-scene-image"
-                     width="2752"
-                     height="1536"
-                     loading="eager"
-                     fetchpriority="high"
-                     decoding="async"
-                     alt="">
+                <div class="master-map">
+                    <img src="assets/immersive-home/09-master-world-map.png"
+                         class="master-scene-image"
+                         width="2752"
+                         height="1536"
+                         loading="eager"
+                         fetchpriority="high"
+                         decoding="async"
+                         alt="">
+                </div>
             </div>
 
             <!-- Overlay Layer for Compact Panels -->
@@ -54,15 +56,15 @@
 
                 <!-- AI Callout (Target Left, Callout Right) -->
                 <article class="chapter-callout callout-ai">
-                    <div class="world-panel">
+                    <div class="map-label">
                         <h2>AI a asistenti</h2>
-                        <p>AI pomocníci a praktické návody pro přípravu výuky.</p>
+                        <p>AI pomocníci a praktické návody.</p>
                         <div class="world-links">
-                            <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-regular fa-file-code"></i> Přehled asistentů
+                            <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Přehled asistentů
                             </a>
-                            <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-regular fa-lightbulb"></i> NotebookLM průvodce
+                            <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                NotebookLM průvodce
                             </a>
                         </div>
                     </div>
@@ -70,15 +72,15 @@
 
                 <!-- Language Callout (Target Left, Callout Right) -->
                 <article class="chapter-callout callout-language">
-                    <div class="world-panel">
+                    <div class="map-label">
                         <h2>Angličtina</h2>
-                        <p>Slovní zásoba a procvičování slovíček i aktivit do hodin.</p>
+                        <p>Procvičování slovíček a aktivit.</p>
                         <div class="world-links">
-                            <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-bolt"></i> Maturita Solutions
+                            <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Maturita Solutions
                             </a>
-                            <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-graduation-cap"></i> Cvičení do angličtiny
+                            <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Cvičení do angličtiny
                             </a>
                         </div>
                     </div>
@@ -86,12 +88,12 @@
 
                 <!-- Electric Callout (Target Right, Callout Left) -->
                 <article class="chapter-callout callout-electric">
-                    <div class="world-panel">
+                    <div class="map-label">
                         <h2>Elektro</h2>
-                        <p>Interaktivní výukové aplikace a simulátory pro elektrikáře.</p>
+                        <p>Simulátory pro elektrikáře.</p>
                         <div class="world-links">
-                            <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-plug"></i> Aplikace pro elektrikáře
+                            <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Aplikace pro elektrikáře
                             </a>
                         </div>
                     </div>
@@ -99,15 +101,15 @@
 
                 <!-- Library Callout (Target Right, Callout Left) -->
                 <article class="chapter-callout callout-library">
-                    <div class="world-panel">
+                    <div class="map-label">
                         <h2>Tvorba materiálů</h2>
-                        <p>Nástroje pro rychlou a přehlednou přípravu výuky.</p>
+                        <p>Rychlá příprava podkladů.</p>
                         <div class="world-links">
-                            <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-chart-pie"></i> Infografika
+                            <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Infografika
                             </a>
-                            <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-person-chalkboard"></i> Prezentace
+                            <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Prezentace
                             </a>
                         </div>
                     </div>
@@ -115,12 +117,12 @@
 
                 <!-- Media Callout (Target Right, Callout Left) -->
                 <article class="chapter-callout callout-media">
-                    <div class="world-panel">
+                    <div class="map-label">
                         <h2>Audio a video</h2>
-                        <p>Promyšlená zadání pro audio/video výstupy a prezentace.</p>
+                        <p>Zadání pro moderní výstupy.</p>
                         <div class="world-links">
-                            <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-btn">
-                                <i class="fa-solid fa-video"></i> Audio/video
+                            <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="world-link-chip">
+                                Audio/video generátor
                             </a>
                         </div>
                     </div>
@@ -128,9 +130,9 @@
 
                 <!-- Outro Callout -->
                 <article class="chapter-callout callout-outro">
-                    <div class="world-panel outro-panel-content">
+                    <div class="map-label outro-label-content">
                         <h2>Všechny cesty jsou připraveny</h2>
-                        <p>Prohlédněte si kompletní přehled a vyberte si ten správný nástroj.</p>
+                        <p>Vyberte si ten správný nástroj pro výuku.</p>
                         <div class="world-links">
                             <a href="#content-start" class="btn-primary scene-cta-outro">Zobrazit přehled cílů</a>
                         </div>
