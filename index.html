@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Učitelský rozcestník</title>
+    <meta name="description" content="Interaktivní rozcestník pro učitele – AI nástroje, angličtina, elektro, tvorba materiálů a audio/video na jednom místě.">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,44 +13,319 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- MAIN CONTAINER -->
-    <main class="container">
-        
-        <!-- HEADER / HERO -->
-        <header class="hero">
-            <div class="hero-content">
-                <a href="#asistenti" class="hero-subtle-cta">
-                    <span class="subtle-cta-text">Každá cesta začíná jedním kliknutím</span>
-                    <span class="subtle-cta-hint">Pokračujte tlačítkem níže <span class="subtle-arrow">↙</span></span>
-                </a>
-                <div class="accent-line"></div>
-                <h1>UČITELSKÝ<br>ROZCESTNÍK</h1>
-                <div class="hero-description">
-                    <p class="lead-text"><strong>Tohle není jen další web s odkazy.</strong><br>Tohle je rozcestí do moderní výuky.</p>
-                    <p>Na jednom místě tu najdete návody, přehledy, výukové materiály a aplikace vytvořené pomocí AI a vibe codingu. Všechno je navržené tak, aby to nebyla teorie do šuplíku, ale reálně použitelné věci pro výuku.</p>
-                </div>
-                
-                <a href="#asistenti" class="btn-primary">ZAČÍT OBJEVOVAT</a>
-            </div>
-            
-            <div class="hero-image">
-                <img src="openart-image_1774128708225_f26da913_1774128708815_6b704815.jpg" alt="Eduobot s rozcestníkem" class="hero-img">
-            </div>
-        </header>
 
-        <!-- FEATURES SECTION -->
+    <!-- ============================================================
+         INTERACTIVE MAP SECTION
+         ============================================================ -->
+    <section class="interactive-map-section" aria-labelledby="map-title">
+
+        <div class="interactive-map-intro">
+            <h1 id="map-title">Učitelský rozcestník</h1>
+            <p class="map-intro-lead">Kudy dnes povedete výuku?</p>
+            <p class="map-intro-desc">Klikněte na některou oblast mapy nebo si projděte přehled všech nástrojů pod ní.</p>
+        </div>
+
+        <div class="interactive-map-shell">
+
+            <!-- Visually hidden description for screen readers -->
+            <p class="visually-hidden">
+                Interaktivní mapa s pěti oblastmi: AI a asistenti, Angličtina,
+                Elektro, Tvorba materiálů, Audio a video.
+                Klikněte na zlatý kruh v příslušné oblasti pro zobrazení odkazů.
+            </p>
+
+            <img
+                src="assets/immersive-home/09-master-world-map.png"
+                class="interactive-map-image"
+                width="2752"
+                height="1536"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                alt=""
+            >
+
+            <!-- Hotspots — positioned as % of .interactive-map-shell -->
+            <div class="map-hotspots" aria-label="Oblasti učitelského rozcestníku">
+
+                <button
+                    type="button"
+                    class="map-hotspot"
+                    id="hs-ai"
+                    data-map-target="ai"
+                    aria-controls="map-panel-ai"
+                    aria-expanded="false"
+                    style="--hs-left: 13.5%; --hs-top: 58%"
+                >
+                    <span class="visually-hidden">AI a asistenti</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="map-hotspot"
+                    id="hs-language"
+                    data-map-target="language"
+                    aria-controls="map-panel-language"
+                    aria-expanded="false"
+                    style="--hs-left: 34%; --hs-top: 56%"
+                >
+                    <span class="visually-hidden">Angličtina</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="map-hotspot"
+                    id="hs-electric"
+                    data-map-target="electric"
+                    aria-controls="map-panel-electric"
+                    aria-expanded="false"
+                    style="--hs-left: 67%; --hs-top: 41%"
+                >
+                    <span class="visually-hidden">Elektro</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="map-hotspot"
+                    id="hs-materials"
+                    data-map-target="materials"
+                    aria-controls="map-panel-materials"
+                    aria-expanded="false"
+                    style="--hs-left: 82%; --hs-top: 51%"
+                >
+                    <span class="visually-hidden">Tvorba materiálů</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="map-hotspot"
+                    id="hs-media"
+                    data-map-target="media"
+                    aria-controls="map-panel-media"
+                    aria-expanded="false"
+                    style="--hs-left: 86%; --hs-top: 72%"
+                >
+                    <span class="visually-hidden">Audio a video</span>
+                </button>
+
+            </div><!-- /.map-hotspots -->
+
+            <!-- Info panels — appear near their hotspot -->
+            <div class="map-panel-layer">
+
+                <article
+                    id="map-panel-ai"
+                    class="map-info-panel"
+                    data-map-panel="ai"
+                    style="--panel-left: 16%; --panel-top: 30%"
+                    hidden
+                    aria-label="AI a asistenti"
+                >
+                    <button type="button" class="panel-close" aria-label="Zavřít panel AI a asistenti">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                    <h2 class="panel-title">
+                        <i class="fa-regular fa-file-code panel-icon" aria-hidden="true"></i>
+                        AI a asistenti
+                    </h2>
+                    <p class="panel-desc">AI pomocníci a praktické návody pro přípravu výuky.</p>
+                    <div class="panel-links">
+                        <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            Přehled asistentů
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            NotebookLM průvodce
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <article
+                    id="map-panel-language"
+                    class="map-info-panel"
+                    data-map-panel="language"
+                    style="--panel-left: 26%; --panel-top: 22%"
+                    hidden
+                    aria-label="Angličtina"
+                >
+                    <button type="button" class="panel-close" aria-label="Zavřít panel Angličtina">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-bolt panel-icon" aria-hidden="true"></i>
+                        Angličtina
+                    </h2>
+                    <p class="panel-desc">Slovní zásoba a procvičování pro hodiny angličtiny.</p>
+                    <div class="panel-links">
+                        <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            Maturita Solutions
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            Cvičení do angličtiny
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <article
+                    id="map-panel-electric"
+                    class="map-info-panel"
+                    data-map-panel="electric"
+                    style="--panel-left: 50%; --panel-top: 22%"
+                    hidden
+                    aria-label="Elektro"
+                >
+                    <button type="button" class="panel-close" aria-label="Zavřít panel Elektro">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-plug panel-icon" aria-hidden="true"></i>
+                        Elektro
+                    </h2>
+                    <p class="panel-desc">Interaktivní simulátory a výukové aplikace pro elektrikáře.</p>
+                    <div class="panel-links">
+                        <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            Aplikace pro elektrikáře
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <article
+                    id="map-panel-materials"
+                    class="map-info-panel"
+                    data-map-panel="materials"
+                    style="--panel-left: 62%; --panel-top: 22%"
+                    hidden
+                    aria-label="Tvorba materiálů"
+                >
+                    <button type="button" class="panel-close" aria-label="Zavřít panel Tvorba materiálů">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-chart-pie panel-icon" aria-hidden="true"></i>
+                        Tvorba materiálů
+                    </h2>
+                    <p class="panel-desc">Rychlá příprava přehledných podkladů a prezentací.</p>
+                    <div class="panel-links">
+                        <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            Infografika
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            Prezentace
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <article
+                    id="map-panel-media"
+                    class="map-info-panel"
+                    data-map-panel="media"
+                    style="--panel-left: 62%; --panel-top: 58%"
+                    hidden
+                    aria-label="Audio a video"
+                >
+                    <button type="button" class="panel-close" aria-label="Zavřít panel Audio a video">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-video panel-icon" aria-hidden="true"></i>
+                        Audio a video
+                    </h2>
+                    <p class="panel-desc">Promyšlená zadání pro audio a video výstupy.</p>
+                    <div class="panel-links">
+                        <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                            Audio/video generátor
+                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </article>
+
+            </div><!-- /.map-panel-layer -->
+
+        </div><!-- /.interactive-map-shell -->
+
+        <!-- Mobile accordion (visible only on small screens) -->
+        <div class="map-mobile-areas" aria-label="Oblasti rozcestníku">
+
+            <details class="mobile-area-item">
+                <summary class="mobile-area-summary">
+                    <i class="fa-regular fa-file-code" aria-hidden="true"></i>
+                    AI a asistenti
+                </summary>
+                <div class="mobile-area-links">
+                    <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Přehled asistentů</a>
+                    <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">NotebookLM průvodce</a>
+                </div>
+            </details>
+
+            <details class="mobile-area-item">
+                <summary class="mobile-area-summary">
+                    <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                    Angličtina
+                </summary>
+                <div class="mobile-area-links">
+                    <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Maturita Solutions</a>
+                    <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Cvičení do angličtiny</a>
+                </div>
+            </details>
+
+            <details class="mobile-area-item">
+                <summary class="mobile-area-summary">
+                    <i class="fa-solid fa-plug" aria-hidden="true"></i>
+                    Elektro
+                </summary>
+                <div class="mobile-area-links">
+                    <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Aplikace pro elektrikáře</a>
+                </div>
+            </details>
+
+            <details class="mobile-area-item">
+                <summary class="mobile-area-summary">
+                    <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
+                    Tvorba materiálů
+                </summary>
+                <div class="mobile-area-links">
+                    <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Infografika</a>
+                    <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Prezentace</a>
+                </div>
+            </details>
+
+            <details class="mobile-area-item">
+                <summary class="mobile-area-summary">
+                    <i class="fa-solid fa-video" aria-hidden="true"></i>
+                    Audio a video
+                </summary>
+                <div class="mobile-area-links">
+                    <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Audio/video generátor</a>
+                </div>
+            </details>
+
+        </div><!-- /.map-mobile-areas -->
+
+    </section><!-- /.interactive-map-section -->
+
+    <!-- ============================================================
+         MAIN CONTENT — Grid of all eight tools
+         ============================================================ -->
+    <main class="container" id="content-start">
+
         <section class="features-section">
             <div class="features-intro">
-                <span class="section-subtitle">SMĚRY ROZCESTNÍKU</span>
+                <span class="section-subtitle">PŘEHLED VŠECH CEST</span>
                 <h2>Vyberte si, kam dál</h2>
                 <div class="accent-line"></div>
-                <p>Tento rozcestník propojuje výukové materiály, AI návody, tematické přehledy a vibecodingové aplikace na jednom místě. Každý směr vede k jiné oblasti obsahu, kterou můžete rovnou využít v praxi.</p>
+                <p>Tento rozcestník propojuje výukové materiály, AI návody, tematické přehledy a vibecodingové aplikace na jednom místě.</p>
             </div>
 
             <div class="features-grid">
-                
+
                 <!-- Feature 1 -->
-                <a href="https://gemforge.netlify.app/" target="_blank" class="feature-item" id="asistenti">
+                <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="asistenti">
                     <div class="feature-icon feature-icon-red">
                         <i class="fa-regular fa-file-code"></i>
                     </div>
@@ -60,7 +336,7 @@
                 </a>
 
                 <!-- Feature 2 -->
-                <a href="https://englishworkshops.netlify.app/" target="_blank" class="feature-item" id="nastroje">
+                <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="nastroje">
                     <div class="feature-icon feature-icon-yellow">
                         <i class="fa-solid fa-bolt"></i>
                     </div>
@@ -71,7 +347,7 @@
                 </a>
 
                 <!-- Feature 3 -->
-                <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" class="feature-item" id="vysledky">
+                <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="vysledky">
                     <div class="feature-icon feature-icon-purple">
                         <i class="fa-regular fa-lightbulb"></i>
                     </div>
@@ -82,7 +358,7 @@
                 </a>
 
                 <!-- Feature 4 -->
-                <a href="https://cviceni-anj.netlify.app/" target="_blank" class="feature-item" id="metodiky">
+                <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="metodiky">
                     <div class="feature-icon feature-icon-blue">
                         <i class="fa-solid fa-graduation-cap"></i>
                     </div>
@@ -93,7 +369,7 @@
                 </a>
 
                 <!-- Feature 5 -->
-                <a href="https://elektrikar-apps.netlify.app/" target="_blank" class="feature-item" id="elektrikar">
+                <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="elektrikar">
                     <div class="feature-icon feature-icon-orange">
                         <i class="fa-solid fa-plug"></i>
                     </div>
@@ -104,7 +380,7 @@
                 </a>
 
                 <!-- Feature 6 -->
-                <a href="https://generator-promptu.netlify.app/" target="_blank" class="feature-item" id="generator">
+                <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="generator">
                     <div class="feature-icon feature-icon-green">
                         <i class="fa-solid fa-chart-pie"></i>
                     </div>
@@ -115,7 +391,7 @@
                 </a>
 
                 <!-- Feature 7 -->
-                <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" class="feature-item" id="presentation">
+                <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="presentation">
                     <div class="feature-icon feature-icon-cyan">
                         <i class="fa-solid fa-person-chalkboard"></i>
                     </div>
@@ -126,7 +402,7 @@
                 </a>
 
                 <!-- Feature 8 -->
-                <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" class="feature-item" id="audiovideo">
+                <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="feature-item" id="audiovideo">
                     <div class="feature-icon feature-icon-pink">
                         <i class="fa-solid fa-video"></i>
                     </div>
