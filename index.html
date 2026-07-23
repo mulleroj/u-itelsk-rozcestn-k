@@ -11,6 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <noscript>
+        <style>
+            /* Without JS the hotspots can't open panels — show the plain
+               list of areas on every viewport instead. */
+            .map-mobile-areas { display: block !important; }
+            .map-hotspots     { display: none !important; }
+        </style>
+    </noscript>
 </head>
 <body>
 
@@ -25,7 +33,7 @@
             <p class="map-intro-desc">Klikněte na některou oblast mapy nebo si projděte přehled všech nástrojů pod ní.</p>
         </div>
 
-        <div class="interactive-map-shell">
+        <div class="interactive-map-shell" data-area="">
 
             <!-- Visually hidden description for screen readers -->
             <p class="visually-hidden">
@@ -34,81 +42,107 @@
                 Klikněte na zlatý kruh v příslušné oblasti pro zobrazení odkazů.
             </p>
 
-            <img
-                src="assets/immersive-home/09-master-world-map.png"
-                class="interactive-map-image"
-                width="2752"
-                height="1536"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                alt=""
-            >
+            <!-- Camera stage — everything inside moves/scales as one scene -->
+            <div class="map-stage">
 
-            <!-- Hotspots — positioned as % of .interactive-map-shell -->
-            <div class="map-hotspots" aria-label="Oblasti učitelského rozcestníku">
-
-                <button
-                    type="button"
-                    class="map-hotspot"
-                    id="hs-ai"
-                    data-map-target="ai"
-                    aria-controls="map-panel-ai"
-                    aria-expanded="false"
-                    style="--hs-left: 13.5%; --hs-top: 58%"
+                <img
+                    src="assets/immersive-home/09-master-world-map.png"
+                    class="interactive-map-image"
+                    width="2752"
+                    height="1536"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                    alt=""
                 >
-                    <span class="visually-hidden">AI a asistenti</span>
-                </button>
 
-                <button
-                    type="button"
-                    class="map-hotspot"
-                    id="hs-language"
-                    data-map-target="language"
-                    aria-controls="map-panel-language"
-                    aria-expanded="false"
-                    style="--hs-left: 34%; --hs-top: 56%"
+                <!-- Local light + vignette that follows the focused area -->
+                <div class="map-scene-light" aria-hidden="true"></div>
+
+                <!-- Hotspots — positioned as % of the stage / map image -->
+                <div class="map-hotspots" aria-label="Oblasti učitelského rozcestníku">
+
+                    <button
+                        type="button"
+                        class="map-hotspot"
+                        id="hs-ai"
+                        data-map-target="ai"
+                        aria-controls="map-panel-ai"
+                        aria-expanded="false"
+                        style="--hs-left: 13.5%; --hs-top: 58%"
+                    >
+                        <span class="hotspot-label">AI a asistenti</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="map-hotspot"
+                        id="hs-language"
+                        data-map-target="language"
+                        aria-controls="map-panel-language"
+                        aria-expanded="false"
+                        style="--hs-left: 34%; --hs-top: 56%"
+                    >
+                        <span class="hotspot-label">Angličtina</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="map-hotspot"
+                        id="hs-electric"
+                        data-map-target="electric"
+                        aria-controls="map-panel-electric"
+                        aria-expanded="false"
+                        style="--hs-left: 67%; --hs-top: 41%"
+                    >
+                        <span class="hotspot-label">Elektro</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="map-hotspot"
+                        id="hs-materials"
+                        data-map-target="materials"
+                        aria-controls="map-panel-materials"
+                        aria-expanded="false"
+                        style="--hs-left: 82%; --hs-top: 51%"
+                    >
+                        <span class="hotspot-label">Tvorba materiálů</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="map-hotspot"
+                        id="hs-media"
+                        data-map-target="media"
+                        aria-controls="map-panel-media"
+                        aria-expanded="false"
+                        style="--hs-left: 86%; --hs-top: 72%"
+                    >
+                        <span class="hotspot-label">Audio a video</span>
+                    </button>
+
+                </div><!-- /.map-hotspots -->
+
+            </div><!-- /.map-stage -->
+
+            <!-- Detail scene — a closer view of the same world.
+                 Backdrop is the empty landscape (01), the active area's
+                 Canva diorama (04–08) floats above it. Purely decorative. -->
+            <div class="map-detail-scene" aria-hidden="true">
+                <img
+                    src="assets/immersive-home/optimized/01-background-landscape.webp"
+                    class="detail-backdrop"
+                    width="1920" height="1080"
+                    loading="lazy" decoding="async" alt=""
                 >
-                    <span class="visually-hidden">Angličtina</span>
-                </button>
-
-                <button
-                    type="button"
-                    class="map-hotspot"
-                    id="hs-electric"
-                    data-map-target="electric"
-                    aria-controls="map-panel-electric"
-                    aria-expanded="false"
-                    style="--hs-left: 67%; --hs-top: 41%"
-                >
-                    <span class="visually-hidden">Elektro</span>
-                </button>
-
-                <button
-                    type="button"
-                    class="map-hotspot"
-                    id="hs-materials"
-                    data-map-target="materials"
-                    aria-controls="map-panel-materials"
-                    aria-expanded="false"
-                    style="--hs-left: 82%; --hs-top: 51%"
-                >
-                    <span class="visually-hidden">Tvorba materiálů</span>
-                </button>
-
-                <button
-                    type="button"
-                    class="map-hotspot"
-                    id="hs-media"
-                    data-map-target="media"
-                    aria-controls="map-panel-media"
-                    aria-expanded="false"
-                    style="--hs-left: 86%; --hs-top: 72%"
-                >
-                    <span class="visually-hidden">Audio a video</span>
-                </button>
-
-            </div><!-- /.map-hotspots -->
+                <img src="assets/immersive-home/optimized/04-ai-world.webp"       class="detail-art" data-detail="ai"        width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                <img src="assets/immersive-home/optimized/05-language-world.webp" class="detail-art" data-detail="language"  width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                <img src="assets/immersive-home/optimized/06-electric-world.webp" class="detail-art" data-detail="electric"  width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                <img src="assets/immersive-home/optimized/07-library-world.webp"  class="detail-art" data-detail="materials" width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                <img src="assets/immersive-home/optimized/08-media-world.webp"    class="detail-art" data-detail="media"     width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                <div class="detail-vignette"></div>
+            </div><!-- /.map-detail-scene -->
 
             <!-- Info panels — appear near their hotspot -->
             <div class="map-panel-layer">
@@ -117,7 +151,7 @@
                     id="map-panel-ai"
                     class="map-info-panel"
                     data-map-panel="ai"
-                    style="--panel-left: 16%; --panel-top: 30%"
+                    style="--panel-left: 55%; --panel-top: 26%"
                     hidden
                     aria-label="AI a asistenti"
                 >
@@ -139,13 +173,17 @@
                             <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
                         </a>
                     </div>
+                    <button type="button" class="panel-return">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                        Zpět na celou mapu
+                    </button>
                 </article>
 
                 <article
                     id="map-panel-language"
                     class="map-info-panel"
                     data-map-panel="language"
-                    style="--panel-left: 26%; --panel-top: 22%"
+                    style="--panel-left: 60%; --panel-top: 24%"
                     hidden
                     aria-label="Angličtina"
                 >
@@ -167,13 +205,17 @@
                             <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
                         </a>
                     </div>
+                    <button type="button" class="panel-return">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                        Zpět na celou mapu
+                    </button>
                 </article>
 
                 <article
                     id="map-panel-electric"
                     class="map-info-panel"
                     data-map-panel="electric"
-                    style="--panel-left: 50%; --panel-top: 22%"
+                    style="--panel-left: 10%; --panel-top: 24%"
                     hidden
                     aria-label="Elektro"
                 >
@@ -191,13 +233,17 @@
                             <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
                         </a>
                     </div>
+                    <button type="button" class="panel-return">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                        Zpět na celou mapu
+                    </button>
                 </article>
 
                 <article
                     id="map-panel-materials"
                     class="map-info-panel"
                     data-map-panel="materials"
-                    style="--panel-left: 62%; --panel-top: 22%"
+                    style="--panel-left: 10%; --panel-top: 26%"
                     hidden
                     aria-label="Tvorba materiálů"
                 >
@@ -219,13 +265,17 @@
                             <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
                         </a>
                     </div>
+                    <button type="button" class="panel-return">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                        Zpět na celou mapu
+                    </button>
                 </article>
 
                 <article
                     id="map-panel-media"
                     class="map-info-panel"
                     data-map-panel="media"
-                    style="--panel-left: 62%; --panel-top: 58%"
+                    style="--panel-left: 10%; --panel-top: 32%"
                     hidden
                     aria-label="Audio a video"
                 >
@@ -243,6 +293,10 @@
                             <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
                         </a>
                     </div>
+                    <button type="button" class="panel-return">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                        Zpět na celou mapu
+                    </button>
                 </article>
 
             </div><!-- /.map-panel-layer -->
@@ -252,55 +306,60 @@
         <!-- Mobile accordion (visible only on small screens) -->
         <div class="map-mobile-areas" aria-label="Oblasti rozcestníku">
 
-            <details class="mobile-area-item">
+            <details class="mobile-area-item" data-area="ai">
                 <summary class="mobile-area-summary">
                     <i class="fa-regular fa-file-code" aria-hidden="true"></i>
                     AI a asistenti
                 </summary>
                 <div class="mobile-area-links">
+                    <img src="assets/immersive-home/optimized/04-ai-world.webp" class="mobile-area-art" width="1600" height="1200" loading="lazy" decoding="async" alt="">
                     <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Přehled asistentů</a>
                     <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">NotebookLM průvodce</a>
                 </div>
             </details>
 
-            <details class="mobile-area-item">
+            <details class="mobile-area-item" data-area="language">
                 <summary class="mobile-area-summary">
                     <i class="fa-solid fa-bolt" aria-hidden="true"></i>
                     Angličtina
                 </summary>
                 <div class="mobile-area-links">
+                    <img src="assets/immersive-home/optimized/05-language-world.webp" class="mobile-area-art" width="1600" height="1200" loading="lazy" decoding="async" alt="">
                     <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Maturita Solutions</a>
                     <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Cvičení do angličtiny</a>
                 </div>
             </details>
 
-            <details class="mobile-area-item">
+            <details class="mobile-area-item" data-area="electric">
                 <summary class="mobile-area-summary">
                     <i class="fa-solid fa-plug" aria-hidden="true"></i>
                     Elektro
                 </summary>
                 <div class="mobile-area-links">
+                    <img src="assets/immersive-home/optimized/06-electric-world.webp" class="mobile-area-art" width="1600" height="1200" loading="lazy" decoding="async" alt="">
                     <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Aplikace pro elektrikáře</a>
                 </div>
             </details>
 
-            <details class="mobile-area-item">
+            <details class="mobile-area-item" data-area="materials">
                 <summary class="mobile-area-summary">
                     <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
                     Tvorba materiálů
                 </summary>
                 <div class="mobile-area-links">
+                    <img src="assets/immersive-home/optimized/07-library-world.webp" class="mobile-area-art" width="1600" height="1200" loading="lazy" decoding="async" alt="">
                     <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Infografika</a>
                     <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Prezentace</a>
                 </div>
             </details>
 
-            <details class="mobile-area-item">
+            <details class="mobile-area-item" data-area="media">
                 <summary class="mobile-area-summary">
                     <i class="fa-solid fa-video" aria-hidden="true"></i>
                     Audio a video
                 </summary>
                 <div class="mobile-area-links">
+                    <img src="assets/immersive-home/optimized/08-media-world.webp" class="mobile-area-art" width="1600" height="1200" loading="lazy" decoding="async" alt="">
                     <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="mobile-area-link">Audio/video generátor</a>
                 </div>
             </details>
