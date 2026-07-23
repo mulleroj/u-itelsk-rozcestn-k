@@ -137,9 +137,20 @@
         var clickedPanel   = e.target.closest('.map-info-panel');
         var clickedHotspot = e.target.closest('.map-hotspot');
 
-        if (!clickedPanel && !clickedHotspot) {
-            closeAll();
-        }
+        if (clickedPanel || clickedHotspot) return;
+
+        // Was keyboard focus still inside the panel we're about to hide?
+        // (A click on a real control elsewhere has already moved focus to
+        //  it by this point, so we must not steal it back.)
+        var openPanelEl     = document.querySelector('.map-info-panel:not([hidden])');
+        var focusWasInPanel = openPanelEl && openPanelEl.contains(document.activeElement);
+        var returnTarget    = activeHotspot;
+
+        closeAll();
+
+        // Only restore focus if it would otherwise be stranded on the
+        // now-hidden panel; leave any legitimately clicked control focused.
+        if (focusWasInPanel && returnTarget) returnTarget.focus();
     });
 
 }());
