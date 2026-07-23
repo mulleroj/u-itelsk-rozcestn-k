@@ -173,4 +173,44 @@
         if (focusWasInPanel && returnTarget) returnTarget.focus();
     });
 
+    /* ── Crossing to the mobile breakpoint clears the desktop scene ──
+       Below 900px the zoomed stage, panels and hotspots are hidden, so a
+       leftover open area would strand the map cropped/zoomed with no way
+       back. When we enter mobile with an area still active, reset the
+       scene; if focus was inside the now-hidden desktop nav, move it to
+       the matching accordion (a visible, logical target) and open it so
+       the visitor keeps the area they were viewing. */
+    function handleBreakpointToMobile(e) {
+        if (!e.matches || !activeHotspot) return;
+
+        var target = activeHotspot.dataset.mapTarget;
+
+        closeAll();
+
+        // The CSS media query hides the desktop nav as we cross the
+        // breakpoint, so its focused control has already lost focus to
+        // <body> by the time this runs. If focus is now stranded (on
+        // <body> or an off-screen element), move it to the matching
+        // accordion item and open it, keeping the visitor on the area
+        // they were viewing. If focus sits on a still-visible control the
+        // user picked, leave it untouched.
+        var ae        = document.activeElement;
+        var focusLost = !ae || ae === document.body || ae.offsetParent === null;
+
+        if (focusLost) {
+            var details = document.querySelector('.mobile-area-item[data-area="' + target + '"]');
+            if (details) {
+                details.open = true;
+                var summary = details.querySelector('.mobile-area-summary');
+                if (summary) summary.focus();
+            }
+        }
+    }
+
+    if (mobileView.addEventListener) {
+        mobileView.addEventListener('change', handleBreakpointToMobile);
+    } else if (mobileView.addListener) {
+        mobileView.addListener(handleBreakpointToMobile); // older browsers
+    }
+
 }());
