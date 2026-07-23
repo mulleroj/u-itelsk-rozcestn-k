@@ -59,6 +59,24 @@
                 <!-- Local light + vignette that follows the focused area -->
                 <div class="map-scene-light" aria-hidden="true"></div>
 
+                <!-- Scenic guide layer — the signpost (03) aligned over its
+                     counterpart painted in map 09. It is invisible at
+                     overview and appears only during the camera flight as a
+                     soft luminous echo that yields and fades, opening the
+                     way to the detail scene. (Eduobot 02 is intentionally
+                     not overlaid: its render differs from the painted robot
+                     in pose and proportions, so even a brief translucent
+                     echo reads as a second figure.)
+                     Purely decorative, never interactive. -->
+                <div class="map-guide-layers" aria-hidden="true">
+                    <img
+                        src="assets/immersive-home/optimized/03-signpost.webp"
+                        class="guide-layer guide-signpost"
+                        width="1200" height="1600"
+                        loading="lazy" decoding="async" alt=""
+                    >
+                </div><!-- /.map-guide-layers -->
+
                 <!-- Hotspots — positioned as % of the stage / map image -->
                 <div class="map-hotspots" aria-label="Oblasti učitelského rozcestníku">
 
