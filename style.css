@@ -173,6 +173,68 @@ body {
 
 
 /* ============================================================
+   DETAIL SCENE — closer view of the focused area
+   Backdrop: empty landscape of the same world (01)
+   Art: the area's Canva diorama (04–08), chosen via data-area
+   ============================================================ */
+.map-detail-scene {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;       /* decorative — clicks pass through */
+    opacity: 0;
+    transition: opacity 550ms ease 280ms;
+}
+
+.interactive-map-shell.is-zoomed .map-detail-scene { opacity: 1; }
+
+.detail-backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+}
+
+/* Soft edge darkening keeps hotspot labels + panels readable */
+.detail-vignette {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    background:
+        linear-gradient(180deg, rgba(4,7,12,0.35), transparent 30%, transparent 72%, rgba(4,7,12,0.45)),
+        radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(4,7,12,0.4) 100%);
+}
+
+/* Area dioramas — one visible at a time, gentle settle-in */
+.detail-art {
+    position: absolute;
+    height: auto;
+    opacity: 0;
+    transform: translateY(2%) scale(1.05);
+    transition:
+        opacity 500ms ease 320ms,
+        transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1) 320ms;
+}
+
+.interactive-map-shell[data-area="ai"]        .detail-art[data-detail="ai"],
+.interactive-map-shell[data-area="language"]  .detail-art[data-detail="language"],
+.interactive-map-shell[data-area="electric"]  .detail-art[data-detail="electric"],
+.interactive-map-shell[data-area="materials"] .detail-art[data-detail="materials"],
+.interactive-map-shell[data-area="media"]     .detail-art[data-detail="media"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Placement per area — opposite side of that area's panel */
+.detail-art[data-detail="ai"]        { width: 44%; left: 4%;  top: 8%; }
+.detail-art[data-detail="language"]  { width: 42%; left: 6%;  top: 10%; }
+.detail-art[data-detail="electric"]  { width: 46%; right: 5%; top: 10%; }
+.detail-art[data-detail="materials"] { width: 42%; right: 7%; top: 8%; }
+.detail-art[data-detail="media"]     { width: 46%; right: 5%; top: 10%; }
+
+
+/* ============================================================
    HOTSPOTS
    ============================================================ */
 .map-hotspots {
@@ -337,8 +399,8 @@ body {
     opacity: 0;
     transform: translateY(12px);
     transition:
-        opacity 380ms ease 230ms,
-        transform 380ms cubic-bezier(0.22, 0.61, 0.36, 1) 230ms;
+        opacity 380ms ease 380ms,
+        transform 380ms cubic-bezier(0.22, 0.61, 0.36, 1) 380ms;
 }
 
 .map-info-panel.is-open {
@@ -493,6 +555,8 @@ body {
     .map-scene-light,
     .map-hotspot,
     .hotspot-label,
+    .map-detail-scene,
+    .detail-art,
     .map-info-panel {
         transition-duration: 0.01ms !important;
         transition-delay: 0ms !important;
@@ -555,6 +619,16 @@ details[open] .mobile-area-summary::before { content: '−'; }
     background: rgba(0,0,0,0.2);
 }
 
+/* Small decorative diorama of the area (webp, lazy-loaded) */
+.mobile-area-art {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: 130px;
+    margin: 0 auto 4px;
+    object-fit: contain;
+}
+
 .mobile-area-link {
     display: block;
     padding: 8px 12px;
@@ -579,7 +653,8 @@ details[open] .mobile-area-summary::before { content: '−'; }
    ============================================================ */
 @media (max-width: 900px) {
     .map-hotspots,
-    .map-panel-layer {
+    .map-panel-layer,
+    .map-detail-scene {
         display: none;
     }
 
