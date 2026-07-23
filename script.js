@@ -201,23 +201,23 @@
 
         closeAll();
 
+        // Always carry the area the visitor was viewing into the mobile
+        // accordion, so its links stay available regardless of where focus
+        // is — otherwise the active area's links would vanish on resize.
+        var details = mobileAreaFor(target);
+        if (details) details.open = true;
+
         // The CSS media query hides the desktop nav as we cross the
         // breakpoint, so its focused control has already lost focus to
-        // <body> by the time this runs. If focus is now stranded (on
-        // <body> or an off-screen element), move it to the matching
-        // accordion item and open it, keeping the visitor on the area
-        // they were viewing. If focus sits on a still-visible control the
-        // user picked, leave it untouched.
+        // <body>. Only when focus is stranded (on <body> or an off-screen
+        // element) do we move it to that area's summary; focus the user
+        // put on a still-visible control is left untouched.
         var ae        = document.activeElement;
         var focusLost = !ae || ae === document.body || ae.offsetParent === null;
 
-        if (focusLost) {
-            var details = mobileAreaFor(target);
-            if (details) {
-                details.open = true;
-                var summary = details.querySelector('.mobile-area-summary');
-                if (summary) summary.focus();
-            }
+        if (focusLost && details) {
+            var summary = details.querySelector('.mobile-area-summary');
+            if (summary) summary.focus();
         }
     }
 
