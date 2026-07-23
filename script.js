@@ -16,9 +16,17 @@
     'use strict';
 
     /* ── DOM references ── */
-    var shell    = document.querySelector('.interactive-map-shell');
-    var hotspots = Array.prototype.slice.call(document.querySelectorAll('.map-hotspot'));
-    var panels   = Array.prototype.slice.call(document.querySelectorAll('.map-info-panel'));
+    var shell       = document.querySelector('.interactive-map-shell');
+    var hotspots    = Array.prototype.slice.call(document.querySelectorAll('.map-hotspot'));
+    var panels      = Array.prototype.slice.call(document.querySelectorAll('.map-info-panel'));
+    var mobileAreas = Array.prototype.slice.call(document.querySelectorAll('.mobile-area-item'));
+
+    /* Find the accordion <details> for an area by comparing existing
+       data-area values — never by concatenating a value into a selector,
+       so an untrusted string can't produce an invalid selector. */
+    function mobileAreaFor(area) {
+        return mobileAreas.filter(function (d) { return d.dataset.area === area; })[0] || null;
+    }
 
     if (!shell || !hotspots.length) return; // no map on this page
 
@@ -138,16 +146,22 @@
         var hash = window.location.hash.replace('#', '');
         if (!hash) return;
 
+        // Validate against the known areas first (the hotspots' own
+        // data-map-target values). An unknown or malformed hash — including
+        // one carrying quotes/brackets — is ignored, leaving the normal
+        // overview, and can never reach a selector or throw.
+        var match = hotspots.filter(function (h) {
+            return h.dataset.mapTarget === hash;
+        })[0];
+        if (!match) return;
+
         if (mobileView.matches) {
-            var details = document.querySelector('.mobile-area-item[data-area="' + hash + '"]');
+            var details = mobileAreaFor(hash);
             if (details) details.open = true;
             return;
         }
 
-        var match = hotspots.filter(function (h) {
-            return h.dataset.mapTarget === hash;
-        })[0];
-        if (match) openPanel(match, false); // open the area, but keep focus
+        openPanel(match, false); // open the area, but keep focus
     }());
 
     /* ── Click outside map panel + hotspot closes ── */
@@ -198,7 +212,7 @@
         var focusLost = !ae || ae === document.body || ae.offsetParent === null;
 
         if (focusLost) {
-            var details = document.querySelector('.mobile-area-item[data-area="' + target + '"]');
+            var details = mobileAreaFor(target);
             if (details) {
                 details.open = true;
                 var summary = details.querySelector('.mobile-area-summary');
