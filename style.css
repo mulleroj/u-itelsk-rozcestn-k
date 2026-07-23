@@ -551,6 +551,8 @@ body {
    REDUCED MOTION — switch states almost instantly
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }   /* no animated focus/scroll jumps */
+
     .map-stage,
     .map-scene-light,
     .map-hotspot,

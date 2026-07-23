@@ -50,7 +50,12 @@
         if (returnTarget) returnTarget.focus();
     }
 
-    function openPanel(hotspot) {
+    // moveFocus is false for the deep-link path: opening an area from a
+    // #hash on page load must not yank focus (and scroll) to the close
+    // button — that is disorienting for keyboard / screen-reader users.
+    function openPanel(hotspot, moveFocus) {
+        if (moveFocus === undefined) moveFocus = true;
+
         var target  = hotspot.dataset.mapTarget;
         var panelId = 'map-panel-' + target;
         var panel   = document.getElementById(panelId);
@@ -79,8 +84,11 @@
             panel.classList.add('is-open');
 
             // Move focus to the close button inside the panel
-            var closeBtn = panel.querySelector('.panel-close');
-            if (closeBtn) closeBtn.focus();
+            // (only for user-driven activation, not deep-link load)
+            if (moveFocus) {
+                var closeBtn = panel.querySelector('.panel-close');
+                if (closeBtn) closeBtn.focus();
+            }
         }, delay);
     }
 
@@ -119,7 +127,7 @@
         var match = hotspots.filter(function (h) {
             return h.dataset.mapTarget === hash;
         })[0];
-        if (match) openPanel(match);
+        if (match) openPanel(match, false); // open the area, but keep focus
     }());
 
     /* ── Click outside map panel + hotspot closes ── */
