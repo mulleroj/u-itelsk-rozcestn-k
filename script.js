@@ -26,6 +26,9 @@
     var panelTimer    = null;
 
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    // Same 900px breakpoint the CSS uses to switch to the mobile accordion,
+    // so the JS never invents a second, conflicting boundary.
+    var mobileView    = window.matchMedia('(max-width: 900px)');
 
     /* ── Helpers ── */
 
@@ -71,23 +74,29 @@
         hotspot.setAttribute('aria-expanded', 'true');
         activeHotspot = hotspot;
 
-        // Reveal the panel once the camera has (mostly) arrived.
-        // With reduced motion everything switches immediately.
-        var delay = reducedMotion.matches ? 0 : 120;
+        // Reveal the panel once the camera has (mostly) arrived. The wait
+        // lives entirely here (single source of timing); the CSS no longer
+        // adds its own transition-delay. Reduced motion opens immediately.
+        // While hidden=false but not yet .is-open the panel is transparent
+        // AND pointer-events:none (see CSS), so it never blocks clicks on
+        // hotspots / the map behind it during the reveal window.
+        var delay = reducedMotion.matches ? 0 : 420;
 
         panel.hidden = false;
 
         panelTimer = setTimeout(function () {
             panelTimer = null;
-            // Force a style pass so the opacity transition can run
-            void panel.offsetWidth;
-            panel.classList.add('is-open');
+            panel.classList.add('is-open'); // starts the fade + pointer-events
 
-            // Move focus to the close button inside the panel
-            // (only for user-driven activation, not deep-link load)
+            // Move focus to the close button only once the panel has
+            // actually begun to appear (next painted frame), never while it
+            // is still fully transparent — and only for user activation.
             if (moveFocus) {
-                var closeBtn = panel.querySelector('.panel-close');
-                if (closeBtn) closeBtn.focus();
+                requestAnimationFrame(function () {
+                    if (!panel.classList.contains('is-open')) return;
+                    var closeBtn = panel.querySelector('.panel-close');
+                    if (closeBtn) closeBtn.focus();
+                });
             }
         }, delay);
     }
@@ -120,10 +129,21 @@
         }
     });
 
-    /* ── Deep link: /#ai, /#language, … opens that area on load ── */
+    /* ── Deep link: /#ai, /#language, … opens that area on load ──
+       Below the mobile breakpoint the desktop scene (zoom + panel) is
+       hidden, so a deep link must open the matching accordion item
+       instead of zooming a map the visitor can't navigate. Neither path
+       steals focus on load. */
     (function () {
         var hash = window.location.hash.replace('#', '');
         if (!hash) return;
+
+        if (mobileView.matches) {
+            var details = document.querySelector('.mobile-area-item[data-area="' + hash + '"]');
+            if (details) details.open = true;
+            return;
+        }
+
         var match = hotspots.filter(function (h) {
             return h.dataset.mapTarget === hash;
         })[0];
