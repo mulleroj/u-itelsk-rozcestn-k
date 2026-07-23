@@ -1,11 +1,14 @@
 /**
- * Učitelský rozcestník — V4 Interactive Map
+ * Učitelský rozcestník — V5 Scenic Map
  * Vanilla JS, no external libraries.
  *
  * Behaviour:
- *  - Click hotspot → open its panel, close any other
- *  - Click close btn, Escape, click outside → close panel
- *  - Focus returns to the activating hotspot on close
+ *  - Click hotspot → the camera stage zooms/pans to that area
+ *    (CSS custom properties per area, driven by data-area on the shell),
+ *    the local light fades in and the area panel opens shortly after
+ *  - Click another hotspot → camera travels to the new area
+ *  - Close btn, "Zpět na celou mapu", Escape, click outside → camera
+ *    returns to the full-map overview, focus returns to the hotspot
  *  - Hotspots hidden on small screens (handled by CSS)
  */
 
@@ -13,19 +16,38 @@
     'use strict';
 
     /* ── DOM references ── */
-    const hotspots = Array.from(document.querySelectorAll('.map-hotspot'));
-    const panels   = Array.from(document.querySelectorAll('.map-info-panel'));
+    var shell    = document.querySelector('.interactive-map-shell');
+    var hotspots = Array.prototype.slice.call(document.querySelectorAll('.map-hotspot'));
+    var panels   = Array.prototype.slice.call(document.querySelectorAll('.map-info-panel'));
 
-    if (!hotspots.length) return; // no map on this page
+    if (!shell || !hotspots.length) return; // no map on this page
 
-    let activeHotspot = null;
+    var activeHotspot = null;
+    var panelTimer    = null;
+
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     /* ── Helpers ── */
 
     function closeAll() {
-        panels.forEach(function (p) { p.hidden = true; });
+        if (panelTimer) {
+            clearTimeout(panelTimer);
+            panelTimer = null;
+        }
+        panels.forEach(function (p) {
+            p.hidden = true;
+            p.classList.remove('is-open');
+        });
         hotspots.forEach(function (h) { h.setAttribute('aria-expanded', 'false'); });
+        shell.classList.remove('is-zoomed');
+        shell.setAttribute('data-area', '');
         activeHotspot = null;
+    }
+
+    function returnToOverview() {
+        var returnTarget = activeHotspot;
+        closeAll();
+        if (returnTarget) returnTarget.focus();
     }
 
     function openPanel(hotspot) {
@@ -35,17 +57,31 @@
 
         if (!panel) return;
 
-        // Close everything first
+        // Close everything first (also clears any pending panel timer)
         closeAll();
 
-        // Open the matched panel
-        panel.hidden = false;
+        // Move the camera to the selected area
+        shell.setAttribute('data-area', target);
+        shell.classList.add('is-zoomed');
         hotspot.setAttribute('aria-expanded', 'true');
         activeHotspot = hotspot;
 
-        // Move focus to the close button inside the panel
-        var closeBtn = panel.querySelector('.panel-close');
-        if (closeBtn) closeBtn.focus();
+        // Reveal the panel once the camera has (mostly) arrived.
+        // With reduced motion everything switches immediately.
+        var delay = reducedMotion.matches ? 0 : 120;
+
+        panel.hidden = false;
+
+        panelTimer = setTimeout(function () {
+            panelTimer = null;
+            // Force a style pass so the opacity transition can run
+            void panel.offsetWidth;
+            panel.classList.add('is-open');
+
+            // Move focus to the close button inside the panel
+            var closeBtn = panel.querySelector('.panel-close');
+            if (closeBtn) closeBtn.focus();
+        }, delay);
     }
 
     /* ── Hotspot click ── */
@@ -53,33 +89,38 @@
         hotspot.addEventListener('click', function () {
             var isOpen = hotspot.getAttribute('aria-expanded') === 'true';
             if (isOpen) {
-                closeAll();
+                returnToOverview();
             } else {
                 openPanel(hotspot);
             }
         });
     });
 
-    /* ── Panel close buttons ── */
+    /* ── Panel close + return buttons ── */
     panels.forEach(function (panel) {
-        var closeBtn = panel.querySelector('.panel-close');
-        if (!closeBtn) return;
+        var closeBtn  = panel.querySelector('.panel-close');
+        var returnBtn = panel.querySelector('.panel-return');
 
-        closeBtn.addEventListener('click', function () {
-            var returnTarget = activeHotspot;
-            closeAll();
-            if (returnTarget) returnTarget.focus();
-        });
+        if (closeBtn)  closeBtn.addEventListener('click', returnToOverview);
+        if (returnBtn) returnBtn.addEventListener('click', returnToOverview);
     });
 
     /* ── Keyboard: Escape closes ── */
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            var returnTarget = activeHotspot;
-            closeAll();
-            if (returnTarget) returnTarget.focus();
+        if (e.key === 'Escape' && activeHotspot) {
+            returnToOverview();
         }
     });
+
+    /* ── Deep link: /#ai, /#language, … opens that area on load ── */
+    (function () {
+        var hash = window.location.hash.replace('#', '');
+        if (!hash) return;
+        var match = hotspots.filter(function (h) {
+            return h.dataset.mapTarget === hash;
+        })[0];
+        if (match) openPanel(match);
+    }());
 
     /* ── Click outside map panel + hotspot closes ── */
     document.addEventListener('click', function (e) {
