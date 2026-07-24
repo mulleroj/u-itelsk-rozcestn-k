@@ -173,6 +173,56 @@ body {
 
 
 /* ============================================================
+   SCENIC GUIDE LAYER — the signpost (03)
+   Aligned over its painted counterpart inside the camera stage,
+   so it travels with the zoom (no second camera). Invisible at
+   overview; during the camera flight it briefly glows as a soft
+   blurred echo drifting at a slightly different pace than the
+   map (a subtle parallax), then fades out completely.
+   Eduobot (02) is deliberately not overlaid — its render differs
+   from the painted robot enough to read as a second figure.
+   ============================================================ */
+.map-guide-layers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;       /* decorative — never blocks hotspots */
+}
+
+.guide-layer {
+    position: absolute;
+    height: auto;
+    opacity: 0;
+    /* Blur melts the small arrow-layout differences from the painted
+       signpost into a light shimmer while the echo is visible */
+    filter: blur(2px) brightness(1.15);
+    will-change: opacity, transform;
+}
+
+/* Canvas placed so the finial and arrow cluster cover the painted ones */
+.guide-signpost {
+    left: 43.6%;
+    top: 34.3%;
+    width: 12.8%;
+    transform-origin: 52% 15%;
+}
+
+/* Camera flight: one-shot luminous echo, 500ms — quicker than the
+   650ms camera move, which gives the near plane its parallax feel.
+   The animation is carried by the .guide-echo helper class, added by
+   the script on every area open so it replays even on a direct
+   area→area switch (see replayGuideEcho). */
+.guide-signpost.guide-echo {
+    animation: signpost-yield 500ms ease-out forwards;
+}
+
+@keyframes signpost-yield {
+    0%   { opacity: 0;    transform: translate3d(0, 0, 0) scale(1); }
+    40%  { opacity: 0.32; }
+    100% { opacity: 0;    transform: translate3d(1.5%, -1%, 0) scale(1.06); }
+}
+
+
+/* ============================================================
    DETAIL SCENE — closer view of the focused area
    Backdrop: empty landscape of the same world (01)
    Art: the area's Canva diorama (04–08), chosen via data-area
@@ -558,6 +608,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }   /* no animated focus/scroll jumps */
 
+    /* No echo flight at all — the layers simply stay invisible */
+    .guide-layer { animation: none !important; }
+
     .map-stage,
     .map-scene-light,
     .map-hotspot,
@@ -661,7 +714,8 @@ details[open] .mobile-area-summary::before { content: '−'; }
 @media (max-width: 900px) {
     .map-hotspots,
     .map-panel-layer,
-    .map-detail-scene {
+    .map-detail-scene,
+    .map-guide-layers {
         display: none;
     }
 

@@ -61,6 +61,30 @@
         if (returnTarget) returnTarget.focus();
     }
 
+    // The signpost echo is a one-shot CSS animation carried by the
+    // .guide-echo helper class. On a direct area→area switch openPanel
+    // removes and re-adds .is-zoomed in the same task, so an echo keyed on
+    // .is-zoomed would never be seen to stop and would not replay. Instead
+    // the script drives the class: remove it, cancel any held animation,
+    // and re-add it on a later frame so the CSS animation starts fresh.
+    // This touches only the guide element — never the camera stage, detail
+    // scene or panel — so the zoom does not reflow or flicker. Reduced
+    // motion keeps the echo off entirely.
+    function replayGuideEcho() {
+        if (reducedMotion.matches) return;
+        var guide = shell.querySelector('.guide-signpost');
+        if (!guide) return;
+
+        guide.classList.remove('guide-echo');
+        guide.getAnimations().forEach(function (a) { a.cancel(); });
+
+        // Re-add on a later frame so the class removal is committed first
+        // and the animation is guaranteed to run from the start.
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () { guide.classList.add('guide-echo'); });
+        });
+    }
+
     // moveFocus is false for the deep-link path: opening an area from a
     // #hash on page load must not yank focus (and scroll) to the close
     // button — that is disorienting for keyboard / screen-reader users.
@@ -81,6 +105,9 @@
         shell.classList.add('is-zoomed');
         hotspot.setAttribute('aria-expanded', 'true');
         activeHotspot = hotspot;
+
+        // Replay the signpost echo even on a direct area→area switch
+        replayGuideEcho();
 
         // Reveal the panel once the camera has (mostly) arrived. The wait
         // lives entirely here (single source of timing); the CSS no longer
