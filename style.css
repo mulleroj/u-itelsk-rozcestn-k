@@ -207,8 +207,11 @@ body {
 }
 
 /* Camera flight: one-shot luminous echo, 500ms — quicker than the
-   650ms camera move, which gives the near plane its parallax feel. */
-.interactive-map-shell.is-zoomed .guide-signpost {
+   650ms camera move, which gives the near plane its parallax feel.
+   The animation is carried by the .guide-echo helper class, added by
+   the script on every area open so it replays even on a direct
+   area→area switch (see replayGuideEcho). */
+.guide-signpost.guide-echo {
     animation: signpost-yield 500ms ease-out forwards;
 }
 
