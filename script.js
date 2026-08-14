@@ -298,9 +298,76 @@
         rail.classList.remove('is-shown');
     }
 
+    /* Was the visitor's focus inside the flight UI? By the time the media
+       query fires, the CSS has already hidden those controls and focus
+       has fallen back to <body>, so the answer has to be remembered as it
+       happens rather than reconstructed afterwards. */
+    var focusInJourney = false;
+
+    document.addEventListener('focusin', function (e) {
+        var el = e.target;
+        /* When the media query hides the flight, the browser drops focus
+           to <body> — and that fallback must not be mistaken for the
+           visitor moving focus somewhere else, or the flag would be
+           cleared a moment before we need to read it. */
+        if (!el || el === document.body || !el.closest) return;
+        focusInJourney = !!el.closest('.journey-stop, .journey-rail');
+    });
+
+    /* Crossing into static mode (below 900px, or prefers-reduced-motion
+       turned on at runtime) hides the whole flight. If the camera was
+       parked in an area, that area has to survive the crossing — the
+       visitor was reading it, and its links must not simply vanish.
+       The area is taken from the scroll-derived active stop, so no
+       second source of truth is introduced. */
+    var carriedArea = null;
+
+    function enterStaticMode() {
+        var carry = activeStop > -1 ? STOPS[activeStop].area : null;
+
+        stop();
+
+        if (!carry) return;
+        var d = detailsFor(carry);
+        if (!d) return;
+
+        carriedArea = carry;
+        d.open = true;
+
+        /* Move focus only when it would otherwise be stranded on a
+           control that no longer exists. Focus the visitor has on
+           something still visible is left where it is. */
+        var ae = document.activeElement;
+        var stranded = focusInJourney &&
+                       (!ae || ae === document.body || ae.offsetParent === null);
+
+        if (stranded) {
+            var summary = d.querySelector('.mobile-area-summary');
+            if (summary) summary.focus();
+            focusInJourney = false;
+        }
+    }
+
+    /* Coming back out of static mode, the document grows from roughly two
+       screens to 640vh in one step. The browser's scroll anchoring keeps
+       whatever was on screen anchored, which after the earlier clamp
+       means landing at the very end of the journey — a different area
+       from the one the visitor was reading. So the area that was handed
+       to the accordion is handed back: we move the document to its
+       waypoint and the camera follows from the scroll, exactly as it
+       does for a deep link. No camera state is restored, only a scroll
+       position. */
+    function exitStaticMode() {
+        var restore = carriedArea;
+        carriedArea = null;
+
+        start();
+        if (restore) goToArea(restore, false);
+    }
+
     function syncMode() {
-        if (staticMode.matches) stop();
-        else start();
+        if (staticMode.matches) enterStaticMode();
+        else exitStaticMode();
     }
 
     /* ── Areas: find by comparing existing values, never by building a
@@ -322,24 +389,39 @@
         return Math.round(geom.top + geom.len * ((s.from + s.to) / 2));
     }
 
+    /* `behavior: 'auto'` does NOT mean "jump": per the CSSOM view spec it
+       defers to the element's scroll-behavior, and ours is `smooth`. A
+       deep link asking for an instant jump would therefore fly through
+       the whole 640vh track on its way to the stop. Suppressing the CSS
+       value for exactly the duration of the call is the smallest fix
+       that keeps smooth scrolling everywhere it is actually wanted. */
+    function instantly(scroll) {
+        var root = document.documentElement;
+        var previous = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        try { scroll(); }
+        finally { root.style.scrollBehavior = previous; }
+    }
+
     function goToArea(area, smooth) {
         var i = stopIndexFor(area);
         if (i < 0) return;
 
+        var animate = smooth && !reduced.matches;
+
         if (staticMode.matches) {
             var d = detailsFor(area);
-            if (d) {
-                d.open = true;
-                d.scrollIntoView({ block: 'start', behavior: smooth && !reduced.matches ? 'smooth' : 'auto' });
-            }
+            if (!d) return;
+            d.open = true;
+            if (animate) d.scrollIntoView({ block: 'start', behavior: 'smooth' });
+            else instantly(function () { d.scrollIntoView({ block: 'start' }); });
             return;
         }
 
         measure();  // the track may not have settled on first paint
-        window.scrollTo({
-            top: scrollTargetFor(i),
-            behavior: smooth && !reduced.matches ? 'smooth' : 'auto'
-        });
+        var y = scrollTargetFor(i);
+        if (animate) window.scrollTo({ top: y, behavior: 'smooth' });
+        else instantly(function () { window.scrollTo(0, y); });
     }
 
     /* ── Skip rail: moves the document, never the camera directly ── */
@@ -359,20 +441,29 @@
     }
 
     /* Changing only the hash is a same-document navigation: no load
-       event fires, so the jump has to be driven from hashchange too. */
+       event fires, so the jump has to be driven from hashchange too.
+       A deep link parks on its stop; it never flies there past the
+       areas in between. */
     window.addEventListener('hashchange', function () {
         var area = currentHashArea();
-        if (area) goToArea(area, true);
+        if (area) goToArea(area, false);
     });
 
     (function () {
         var area = currentHashArea();
         if (!area) return;
 
+        /* With a valid area in the URL the hash is what decides where we
+           land, so the browser must not also restore a previous position
+           — otherwise it paints that first and our jump reads as a
+           flicker. Restoration is left alone for every other load, where
+           resuming mid-journey is the right behaviour. */
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+
         /* Wait for layout (fonts, the master map) before trusting the
-           track's height. The browser may also restore a previous
-           scroll position on this load, so the jump is taken on the
-           frame after that has settled — and without an animation. */
+           track's height, then jump on the next frame — instantly. */
         window.addEventListener('load', function () {
             requestAnimationFrame(function () { goToArea(area, false); });
         });
