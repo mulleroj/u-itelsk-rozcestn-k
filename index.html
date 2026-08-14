@@ -13,317 +13,393 @@
     <link rel="stylesheet" href="style.css">
     <noscript>
         <style>
-            /* Without JS the hotspots can't open panels — show the plain
+            /* Without JS the markers can't open panels — show the plain
                list of areas on every viewport instead. */
             .map-mobile-areas { display: block !important; }
             .map-hotspots     { display: none !important; }
+            .world-rail       { display: none !important; }
         </style>
     </noscript>
 </head>
 <body>
 
     <!-- ============================================================
-         INTERACTIVE MAP SECTION
+         LIVING WORLD — the map is the hero of the whole page
          ============================================================ -->
-    <section class="interactive-map-section" aria-labelledby="map-title">
+    <section class="world-section" aria-labelledby="map-title">
 
-        <div class="interactive-map-intro">
-            <h1 id="map-title">Učitelský rozcestník</h1>
-            <p class="map-intro-lead">Kudy dnes povedete výuku?</p>
-            <p class="map-intro-desc">Klikněte na některou oblast mapy nebo si projděte přehled všech nástrojů pod ní.</p>
-        </div>
+        <div class="world-stage-wrap">
 
-        <div class="interactive-map-shell" data-area="">
+            <!-- The title lives *inside* the scene on desktop (absolutely
+                 placed over the empty sky band of the map) so the first
+                 viewport reads as one scenic whole instead of "heading +
+                 picture below". Below the mobile breakpoint it falls back
+                 to ordinary flow above the map. -->
+            <div class="world-title">
+                <h1 id="map-title">Učitelský rozcestník</h1>
+                <p class="world-lead">Kudy dnes povedete výuku?</p>
+                <p class="world-hint">
+                    <span class="hint-dot" aria-hidden="true"></span>
+                    Vyberte místo na mapě — přeletíme tam společně
+                </p>
+            </div>
 
-            <!-- Visually hidden description for screen readers -->
-            <p class="visually-hidden">
-                Interaktivní mapa s pěti oblastmi: AI a asistenti, Angličtina,
-                Elektro, Tvorba materiálů, Audio a video.
-                Klikněte na zlatý kruh v příslušné oblasti pro zobrazení odkazů.
-            </p>
+            <div class="interactive-map-shell" data-area="">
 
-            <!-- Camera stage — everything inside moves/scales as one scene -->
-            <div class="map-stage">
+                <!-- Visually hidden description for screen readers -->
+                <p class="visually-hidden">
+                    Interaktivní mapa s pěti oblastmi: AI a asistenti, Angličtina,
+                    Elektro, Tvorba materiálů, Audio a video.
+                    Vyberte cedulku s názvem oblasti pro zobrazení odkazů.
+                </p>
 
-                <img
-                    src="assets/immersive-home/09-master-world-map.png"
-                    class="interactive-map-image"
-                    width="2752"
-                    height="1536"
-                    loading="eager"
-                    fetchpriority="high"
-                    decoding="async"
-                    alt=""
-                >
+                <!-- Camera stage — everything inside moves/scales as one scene -->
+                <div class="map-stage">
 
-                <!-- Local light + vignette that follows the focused area -->
-                <div class="map-scene-light" aria-hidden="true"></div>
-
-                <!-- Scenic guide layer — the signpost (03) aligned over its
-                     counterpart painted in map 09. It is invisible at
-                     overview and appears only during the camera flight as a
-                     soft luminous echo that yields and fades, opening the
-                     way to the detail scene. (Eduobot 02 is intentionally
-                     not overlaid: its render differs from the painted robot
-                     in pose and proportions, so even a brief translucent
-                     echo reads as a second figure.)
-                     Purely decorative, never interactive. -->
-                <div class="map-guide-layers" aria-hidden="true">
                     <img
-                        src="assets/immersive-home/optimized/03-signpost.webp"
-                        class="guide-layer guide-signpost"
-                        width="1200" height="1600"
+                        src="assets/immersive-home/09-master-world-map.png"
+                        class="interactive-map-image"
+                        width="2752"
+                        height="1536"
+                        loading="eager"
+                        fetchpriority="high"
+                        decoding="async"
+                        alt=""
+                    >
+
+                    <!-- Local light + vignette that follows the focused area -->
+                    <div class="map-scene-light" aria-hidden="true"></div>
+
+                    <!-- Hover/focus light — blooms at the previewed marker and
+                         lets the rest of the world step back a little -->
+                    <div class="map-focus-light" aria-hidden="true"></div>
+
+                    <!-- Ambient life: two very slow atmospheric veils drifting
+                         over the scene plus a few floating motes. Transform and
+                         opacity only, so nothing ever triggers layout. -->
+                    <div class="world-air" aria-hidden="true">
+                        <span class="air-veil air-veil-a"></span>
+                        <span class="air-veil air-veil-b"></span>
+                        <span class="air-mote" style="--mo-x: 22%; --mo-y: 74%; --mo-d: 0s;   --mo-t: 23s"></span>
+                        <span class="air-mote" style="--mo-x: 47%; --mo-y: 86%; --mo-d: -7s;  --mo-t: 29s"></span>
+                        <span class="air-mote" style="--mo-x: 63%; --mo-y: 68%; --mo-d: -14s; --mo-t: 26s"></span>
+                        <span class="air-mote" style="--mo-x: 79%; --mo-y: 90%; --mo-d: -3s;  --mo-t: 31s"></span>
+                    </div>
+
+                    <!-- Scenic guide layer — the signpost (03) aligned over its
+                         counterpart painted in map 09. It is invisible at
+                         overview and appears only during the camera flight as a
+                         soft luminous echo that yields and fades, opening the
+                         way to the detail scene. (Eduobot 02 is intentionally
+                         not overlaid: its render differs from the painted robot
+                         in pose and proportions, so even a brief translucent
+                         echo reads as a second figure.)
+                         Purely decorative, never interactive. -->
+                    <div class="map-guide-layers" aria-hidden="true">
+                        <img
+                            src="assets/immersive-home/optimized/03-signpost.webp"
+                            class="guide-layer guide-signpost"
+                            width="1200" height="1600"
+                            loading="lazy" decoding="async" alt=""
+                        >
+                    </div><!-- /.map-guide-layers -->
+
+                    <!-- Foreground haze — the nearest depth plane. It drifts
+                         further than the map under the pointer parallax, which
+                         is what makes the scene read as 2.5D rather than flat. -->
+                    <div class="world-haze" aria-hidden="true"></div>
+
+                    <!-- ── Trail markers ──
+                         Each marker is one <button>: a glowing node planted at
+                         the landmark, a hairline stem and an always-visible
+                         nameplate. The button box spans plate + stem + node, so
+                         the real hit area is far larger than the visible node
+                         while the artwork underneath stays uncovered. -->
+                    <div class="map-hotspots" aria-label="Oblasti učitelského rozcestníku">
+
+                        <button
+                            type="button"
+                            class="map-marker"
+                            id="hs-ai"
+                            data-map-target="ai"
+                            data-place="below"
+                            aria-controls="map-panel-ai"
+                            aria-expanded="false"
+                            style="--mk-x: 13.5%; --mk-y: 82%; --mk-i: 0"
+                        >
+                            <span class="marker-plate"><span class="marker-name">AI a asistenti</span></span>
+                            <span class="marker-stem" aria-hidden="true"></span>
+                            <span class="marker-node" aria-hidden="true"></span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="map-marker"
+                            id="hs-language"
+                            data-map-target="language"
+                            data-place="above"
+                            aria-controls="map-panel-language"
+                            aria-expanded="false"
+                            style="--mk-x: 33.5%; --mk-y: 47%; --mk-i: 1"
+                        >
+                            <span class="marker-plate"><span class="marker-name">Angličtina</span></span>
+                            <span class="marker-stem" aria-hidden="true"></span>
+                            <span class="marker-node" aria-hidden="true"></span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="map-marker"
+                            id="hs-electric"
+                            data-map-target="electric"
+                            data-place="above"
+                            aria-controls="map-panel-electric"
+                            aria-expanded="false"
+                            style="--mk-x: 69%; --mk-y: 36%; --mk-i: 2"
+                        >
+                            <span class="marker-plate"><span class="marker-name">Elektro</span></span>
+                            <span class="marker-stem" aria-hidden="true"></span>
+                            <span class="marker-node" aria-hidden="true"></span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="map-marker"
+                            id="hs-materials"
+                            data-map-target="materials"
+                            data-place="above"
+                            aria-controls="map-panel-materials"
+                            aria-expanded="false"
+                            style="--mk-x: 83%; --mk-y: 45%; --mk-i: 3"
+                        >
+                            <span class="marker-plate"><span class="marker-name">Tvorba materiálů</span></span>
+                            <span class="marker-stem" aria-hidden="true"></span>
+                            <span class="marker-node" aria-hidden="true"></span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="map-marker"
+                            id="hs-media"
+                            data-map-target="media"
+                            data-place="below"
+                            aria-controls="map-panel-media"
+                            aria-expanded="false"
+                            style="--mk-x: 87%; --mk-y: 83%; --mk-i: 4"
+                        >
+                            <span class="marker-plate"><span class="marker-name">Audio a video</span></span>
+                            <span class="marker-stem" aria-hidden="true"></span>
+                            <span class="marker-node" aria-hidden="true"></span>
+                        </button>
+
+                    </div><!-- /.map-hotspots -->
+
+                </div><!-- /.map-stage -->
+
+                <!-- Detail scene — a closer view of the same world.
+                     Backdrop is the empty landscape (01), the active area's
+                     Canva diorama (04–08) floats above it. Purely decorative. -->
+                <div class="map-detail-scene" aria-hidden="true">
+                    <img
+                        src="assets/immersive-home/optimized/01-background-landscape.webp"
+                        class="detail-backdrop"
+                        width="1920" height="1080"
                         loading="lazy" decoding="async" alt=""
                     >
-                </div><!-- /.map-guide-layers -->
+                    <img src="assets/immersive-home/optimized/04-ai-world.webp"       class="detail-art" data-detail="ai"        width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                    <img src="assets/immersive-home/optimized/05-language-world.webp" class="detail-art" data-detail="language"  width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                    <img src="assets/immersive-home/optimized/06-electric-world.webp" class="detail-art" data-detail="electric"  width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                    <img src="assets/immersive-home/optimized/07-library-world.webp"  class="detail-art" data-detail="materials" width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                    <img src="assets/immersive-home/optimized/08-media-world.webp"    class="detail-art" data-detail="media"     width="1600" height="1200" loading="lazy" decoding="async" alt="">
+                    <div class="detail-vignette"></div>
+                </div><!-- /.map-detail-scene -->
 
-                <!-- Hotspots — positioned as % of the stage / map image -->
-                <div class="map-hotspots" aria-label="Oblasti učitelského rozcestníku">
+                <!-- Info panels — travel boards anchored into their area -->
+                <div class="map-panel-layer">
 
-                    <button
-                        type="button"
-                        class="map-hotspot"
-                        id="hs-ai"
-                        data-map-target="ai"
-                        aria-controls="map-panel-ai"
-                        aria-expanded="false"
-                        style="--hs-left: 13.5%; --hs-top: 58%"
+                    <article
+                        id="map-panel-ai"
+                        class="map-info-panel"
+                        data-map-panel="ai"
+                        style="--panel-left: 57%; --panel-top: 21%"
+                        hidden
+                        aria-label="AI a asistenti"
                     >
-                        <span class="hotspot-label">AI a asistenti</span>
-                    </button>
+                        <button type="button" class="panel-close" aria-label="Zavřít oblast AI a asistenti">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                        <p class="panel-kicker">Oblast mapy</p>
+                        <h2 class="panel-title">
+                            <i class="fa-regular fa-file-code panel-icon" aria-hidden="true"></i>
+                            AI a asistenti
+                        </h2>
+                        <p class="panel-desc">AI pomocníci a praktické návody pro přípravu výuky.</p>
+                        <div class="panel-links">
+                            <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">Přehled asistentů</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                            <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">NotebookLM průvodce</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <button type="button" class="panel-return">
+                            <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+                            Zpět na celou mapu
+                        </button>
+                    </article>
 
-                    <button
-                        type="button"
-                        class="map-hotspot"
-                        id="hs-language"
-                        data-map-target="language"
-                        aria-controls="map-panel-language"
-                        aria-expanded="false"
-                        style="--hs-left: 34%; --hs-top: 56%"
+                    <article
+                        id="map-panel-language"
+                        class="map-info-panel"
+                        data-map-panel="language"
+                        style="--panel-left: 60%; --panel-top: 21%"
+                        hidden
+                        aria-label="Angličtina"
                     >
-                        <span class="hotspot-label">Angličtina</span>
-                    </button>
+                        <button type="button" class="panel-close" aria-label="Zavřít oblast Angličtina">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                        <p class="panel-kicker">Oblast mapy</p>
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-bolt panel-icon" aria-hidden="true"></i>
+                            Angličtina
+                        </h2>
+                        <p class="panel-desc">Slovní zásoba a procvičování pro hodiny angličtiny.</p>
+                        <div class="panel-links">
+                            <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">Maturita Solutions</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                            <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">Cvičení do angličtiny</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <button type="button" class="panel-return">
+                            <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+                            Zpět na celou mapu
+                        </button>
+                    </article>
 
-                    <button
-                        type="button"
-                        class="map-hotspot"
-                        id="hs-electric"
-                        data-map-target="electric"
-                        aria-controls="map-panel-electric"
-                        aria-expanded="false"
-                        style="--hs-left: 67%; --hs-top: 41%"
+                    <article
+                        id="map-panel-electric"
+                        class="map-info-panel"
+                        data-map-panel="electric"
+                        style="--panel-left: 8%; --panel-top: 21%"
+                        hidden
+                        aria-label="Elektro"
                     >
-                        <span class="hotspot-label">Elektro</span>
-                    </button>
+                        <button type="button" class="panel-close" aria-label="Zavřít oblast Elektro">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                        <p class="panel-kicker">Oblast mapy</p>
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-plug panel-icon" aria-hidden="true"></i>
+                            Elektro
+                        </h2>
+                        <p class="panel-desc">Interaktivní simulátory a výukové aplikace pro elektrikáře.</p>
+                        <div class="panel-links">
+                            <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">Aplikace pro elektrikáře</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                            <a href="https://elektro-lab.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">ElektroLab</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <button type="button" class="panel-return">
+                            <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+                            Zpět na celou mapu
+                        </button>
+                    </article>
 
-                    <button
-                        type="button"
-                        class="map-hotspot"
-                        id="hs-materials"
-                        data-map-target="materials"
-                        aria-controls="map-panel-materials"
-                        aria-expanded="false"
-                        style="--hs-left: 82%; --hs-top: 51%"
+                    <article
+                        id="map-panel-materials"
+                        class="map-info-panel"
+                        data-map-panel="materials"
+                        style="--panel-left: 8%; --panel-top: 23%"
+                        hidden
+                        aria-label="Tvorba materiálů"
                     >
-                        <span class="hotspot-label">Tvorba materiálů</span>
-                    </button>
+                        <button type="button" class="panel-close" aria-label="Zavřít oblast Tvorba materiálů">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                        <p class="panel-kicker">Oblast mapy</p>
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-chart-pie panel-icon" aria-hidden="true"></i>
+                            Tvorba materiálů
+                        </h2>
+                        <p class="panel-desc">Rychlá příprava přehledných podkladů a prezentací.</p>
+                        <div class="panel-links">
+                            <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">Infografika</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                            <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">Prezentace</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <button type="button" class="panel-return">
+                            <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+                            Zpět na celou mapu
+                        </button>
+                    </article>
 
-                    <button
-                        type="button"
-                        class="map-hotspot"
-                        id="hs-media"
-                        data-map-target="media"
-                        aria-controls="map-panel-media"
-                        aria-expanded="false"
-                        style="--hs-left: 86%; --hs-top: 72%"
+                    <article
+                        id="map-panel-media"
+                        class="map-info-panel"
+                        data-map-panel="media"
+                        style="--panel-left: 8%; --panel-top: 25%"
+                        hidden
+                        aria-label="Audio a video"
                     >
-                        <span class="hotspot-label">Audio a video</span>
-                    </button>
+                        <button type="button" class="panel-close" aria-label="Zavřít oblast Audio a video">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                        <p class="panel-kicker">Oblast mapy</p>
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-video panel-icon" aria-hidden="true"></i>
+                            Audio a video
+                        </h2>
+                        <p class="panel-desc">Promyšlená zadání pro audio a video výstupy.</p>
+                        <div class="panel-links">
+                            <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
+                                <span class="link-name">Audio/video generátor</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <button type="button" class="panel-return">
+                            <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+                            Zpět na celou mapu
+                        </button>
+                    </article>
 
-                </div><!-- /.map-hotspots -->
+                </div><!-- /.map-panel-layer -->
 
-            </div><!-- /.map-stage -->
+                <!-- Signpost rail — appears only while the camera is inside an
+                     area. The detail scene covers the markers at that point, so
+                     the rail is what keeps every other area one click away
+                     (direct A → B flight) and carries the way back out. -->
+                <nav class="world-rail" aria-label="Přeletět do jiné oblasti">
+                    <button type="button" class="rail-item rail-home" data-rail-home>
+                        <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+                        Celá mapa
+                    </button>
+                    <span class="rail-sep" aria-hidden="true"></span>
+                    <button type="button" class="rail-item" data-rail-target="ai">AI a asistenti</button>
+                    <button type="button" class="rail-item" data-rail-target="language">Angličtina</button>
+                    <button type="button" class="rail-item" data-rail-target="electric">Elektro</button>
+                    <button type="button" class="rail-item" data-rail-target="materials">Tvorba materiálů</button>
+                    <button type="button" class="rail-item" data-rail-target="media">Audio a video</button>
+                </nav>
 
-            <!-- Detail scene — a closer view of the same world.
-                 Backdrop is the empty landscape (01), the active area's
-                 Canva diorama (04–08) floats above it. Purely decorative. -->
-            <div class="map-detail-scene" aria-hidden="true">
-                <img
-                    src="assets/immersive-home/optimized/01-background-landscape.webp"
-                    class="detail-backdrop"
-                    width="1920" height="1080"
-                    loading="lazy" decoding="async" alt=""
-                >
-                <img src="assets/immersive-home/optimized/04-ai-world.webp"       class="detail-art" data-detail="ai"        width="1600" height="1200" loading="lazy" decoding="async" alt="">
-                <img src="assets/immersive-home/optimized/05-language-world.webp" class="detail-art" data-detail="language"  width="1600" height="1200" loading="lazy" decoding="async" alt="">
-                <img src="assets/immersive-home/optimized/06-electric-world.webp" class="detail-art" data-detail="electric"  width="1600" height="1200" loading="lazy" decoding="async" alt="">
-                <img src="assets/immersive-home/optimized/07-library-world.webp"  class="detail-art" data-detail="materials" width="1600" height="1200" loading="lazy" decoding="async" alt="">
-                <img src="assets/immersive-home/optimized/08-media-world.webp"    class="detail-art" data-detail="media"     width="1600" height="1200" loading="lazy" decoding="async" alt="">
-                <div class="detail-vignette"></div>
-            </div><!-- /.map-detail-scene -->
+            </div><!-- /.interactive-map-shell -->
 
-            <!-- Info panels — appear near their hotspot -->
-            <div class="map-panel-layer">
-
-                <article
-                    id="map-panel-ai"
-                    class="map-info-panel"
-                    data-map-panel="ai"
-                    style="--panel-left: 55%; --panel-top: 26%"
-                    hidden
-                    aria-label="AI a asistenti"
-                >
-                    <button type="button" class="panel-close" aria-label="Zavřít panel AI a asistenti">
-                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                    </button>
-                    <h2 class="panel-title">
-                        <i class="fa-regular fa-file-code panel-icon" aria-hidden="true"></i>
-                        AI a asistenti
-                    </h2>
-                    <p class="panel-desc">AI pomocníci a praktické návody pro přípravu výuky.</p>
-                    <div class="panel-links">
-                        <a href="https://gemforge.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            Přehled asistentů
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                        <a href="https://notebooklm-pruvodce.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            NotebookLM průvodce
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <button type="button" class="panel-return">
-                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                        Zpět na celou mapu
-                    </button>
-                </article>
-
-                <article
-                    id="map-panel-language"
-                    class="map-info-panel"
-                    data-map-panel="language"
-                    style="--panel-left: 60%; --panel-top: 24%"
-                    hidden
-                    aria-label="Angličtina"
-                >
-                    <button type="button" class="panel-close" aria-label="Zavřít panel Angličtina">
-                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                    </button>
-                    <h2 class="panel-title">
-                        <i class="fa-solid fa-bolt panel-icon" aria-hidden="true"></i>
-                        Angličtina
-                    </h2>
-                    <p class="panel-desc">Slovní zásoba a procvičování pro hodiny angličtiny.</p>
-                    <div class="panel-links">
-                        <a href="https://englishworkshops.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            Maturita Solutions
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                        <a href="https://cviceni-anj.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            Cvičení do angličtiny
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <button type="button" class="panel-return">
-                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                        Zpět na celou mapu
-                    </button>
-                </article>
-
-                <article
-                    id="map-panel-electric"
-                    class="map-info-panel"
-                    data-map-panel="electric"
-                    style="--panel-left: 10%; --panel-top: 24%"
-                    hidden
-                    aria-label="Elektro"
-                >
-                    <button type="button" class="panel-close" aria-label="Zavřít panel Elektro">
-                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                    </button>
-                    <h2 class="panel-title">
-                        <i class="fa-solid fa-plug panel-icon" aria-hidden="true"></i>
-                        Elektro
-                    </h2>
-                    <p class="panel-desc">Interaktivní simulátory a výukové aplikace pro elektrikáře.</p>
-                    <div class="panel-links">
-                        <a href="https://elektrikar-apps.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            Aplikace pro elektrikáře
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                        <a href="https://elektro-lab.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            ElektroLab
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <button type="button" class="panel-return">
-                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                        Zpět na celou mapu
-                    </button>
-                </article>
-
-                <article
-                    id="map-panel-materials"
-                    class="map-info-panel"
-                    data-map-panel="materials"
-                    style="--panel-left: 10%; --panel-top: 26%"
-                    hidden
-                    aria-label="Tvorba materiálů"
-                >
-                    <button type="button" class="panel-close" aria-label="Zavřít panel Tvorba materiálů">
-                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                    </button>
-                    <h2 class="panel-title">
-                        <i class="fa-solid fa-chart-pie panel-icon" aria-hidden="true"></i>
-                        Tvorba materiálů
-                    </h2>
-                    <p class="panel-desc">Rychlá příprava přehledných podkladů a prezentací.</p>
-                    <div class="panel-links">
-                        <a href="https://generator-promptu.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            Infografika
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                        <a href="https://ntb-presentation-prompt.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            Prezentace
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <button type="button" class="panel-return">
-                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                        Zpět na celou mapu
-                    </button>
-                </article>
-
-                <article
-                    id="map-panel-media"
-                    class="map-info-panel"
-                    data-map-panel="media"
-                    style="--panel-left: 10%; --panel-top: 32%"
-                    hidden
-                    aria-label="Audio a video"
-                >
-                    <button type="button" class="panel-close" aria-label="Zavřít panel Audio a video">
-                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                    </button>
-                    <h2 class="panel-title">
-                        <i class="fa-solid fa-video panel-icon" aria-hidden="true"></i>
-                        Audio a video
-                    </h2>
-                    <p class="panel-desc">Promyšlená zadání pro audio a video výstupy.</p>
-                    <div class="panel-links">
-                        <a href="https://promptgenerator-audio-video.netlify.app/" target="_blank" rel="noopener noreferrer" class="panel-link">
-                            Audio/video generátor
-                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <button type="button" class="panel-return">
-                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                        Zpět na celou mapu
-                    </button>
-                </article>
-
-            </div><!-- /.map-panel-layer -->
-
-        </div><!-- /.interactive-map-shell -->
+        </div><!-- /.world-stage-wrap -->
 
         <!-- Mobile accordion (visible only on small screens) -->
         <div class="map-mobile-areas" aria-label="Oblasti rozcestníku">
@@ -389,7 +465,7 @@
 
         </div><!-- /.map-mobile-areas -->
 
-    </section><!-- /.interactive-map-section -->
+    </section><!-- /.world-section -->
 
     <!-- ============================================================
          MAIN CONTENT — Grid of all tools
@@ -398,7 +474,7 @@
 
         <section class="features-section">
             <div class="features-intro">
-                <span class="section-subtitle">PŘEHLED VŠECH CEST</span>
+                <span class="section-subtitle">Přehled všech cest</span>
                 <h2>Vyberte si, kam dál</h2>
                 <div class="accent-line"></div>
                 <p>Tento rozcestník propojuje výukové materiály, AI návody, tematické přehledy a vibecodingové aplikace na jednom místě.</p>
