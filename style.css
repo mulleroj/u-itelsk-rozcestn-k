@@ -1,7 +1,12 @@
 /* ============================================================
-   UČITELSKÝ ROZCESTNÍK — V4 Interactive Map
-   Vanilla CSS, no GSAP, no animation libraries
-   Retrigger Netlify Deploy Preview
+   UČITELSKÝ ROZCESTNÍK — V6 Living Interactive World
+   Vanilla CSS, no GSAP / Three.js / animation libraries.
+
+   The homepage is one scenic whole: the illustrated map fills the
+   first viewport, the five places carry permanent trail markers,
+   the world breathes on its own, hover leans the camera in and a
+   click flies into the area. Everything is transform/opacity so
+   nothing here ever triggers layout.
    ============================================================ */
 
 /* ── Reset & Base ── */
@@ -10,19 +15,24 @@
 :root {
     --gold:        #c9a84c;
     --gold-light:  #e8c97a;
+    --gold-pale:   #f6ecd4;
     --gold-glow:   rgba(201, 168, 76, 0.45);
-    --dark-bg:     #0e1117;
-    --dark-card:   rgba(14, 17, 23, 0.88);
-    --dark-panel:  rgba(16, 20, 30, 0.92);
+    --dark-bg:     #0a0d13;
     --text-main:   #e8e8ee;
     --text-muted:  #9a9aaa;
     --border:      rgba(201, 168, 76, 0.22);
-    --radius-sm:   6px;
+    --radius-sm:   3px;
     --radius-md:   10px;
-    --radius-lg:   16px;
+    --radius-lg:   14px;
     --shadow-card: 0 4px 32px rgba(0,0,0,0.55);
     --font:        'Open Sans', system-ui, sans-serif;
     --transition:  0.2s ease;
+    --ease-fly:    cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* Aspect of assets/immersive-home/09-master-world-map.png
+       (2752 / 1536) — used to size the hero so the whole world
+       always fits the first viewport without cropping. */
+    --world-aspect: 1.7917;
 }
 
 html { scroll-behavior: smooth; }
@@ -47,73 +57,185 @@ body {
 
 /* ── Focus ring ── */
 :focus-visible {
-    outline: 2px solid var(--gold);
+    outline: 2px solid var(--gold-light);
     outline-offset: 3px;
 }
 
 
 /* ============================================================
-   INTERACTIVE MAP SECTION
+   THE WORLD — hero section
+   The scene is sized from the viewport height so the entire map
+   is visible at once; the atmospheric glow behind it makes the
+   narrow side bands on short screens read as air, not padding.
    ============================================================ */
-.interactive-map-section {
-    padding: 3rem 1.5rem 2.5rem;
-    max-width: 1600px;
+.world-section {
+    position: relative;
+    max-width: 1780px;
     margin: 0 auto;
+    padding:
+        clamp(1.1rem, 2.2vh, 1.9rem)
+        clamp(0.9rem, 2vw, 2.25rem)
+        clamp(1.4rem, 3vh, 2.4rem);
 }
 
-/* ── Intro header ── */
-.interactive-map-intro {
+.world-section::before {
+    content: '';
+    position: absolute;
+    /* Kept inside the section horizontally: a negative inline inset
+       would widen the document and produce a horizontal scrollbar. */
+    inset: -9% 0 9%;
+    background: radial-gradient(ellipse 76% 62% at 50% 42%, rgba(30, 84, 108, 0.32), transparent 74%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.world-stage-wrap {
+    position: relative;
+    width: min(100%, calc((100vh - 7rem) * var(--world-aspect)));
+    width: min(100%, calc((100svh - 7rem) * var(--world-aspect)));
+    margin-inline: auto;
+}
+
+
+/* ── Title, carried inside the scene ──
+   Small, letterspaced and laid over the empty sky band so the
+   first viewport is a world, not "a headline with a picture
+   under it". It lifts away as soon as the camera flies in. */
+.world-title {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    top: clamp(8px, 3%, 30px);
+    transform: translateX(-50%);
+    width: min(94%, 620px);
+    padding: 0.5rem 1.5rem 0.9rem;
     text-align: center;
-    margin-bottom: 2rem;
+    pointer-events: none;
+    /* soft scrim, so the type stays readable over the sky */
+    background: radial-gradient(ellipse 66% 120% at 50% 40%, rgba(5, 8, 14, 0.62), transparent 74%);
+    transition:
+        opacity 380ms ease,
+        transform 520ms var(--ease-fly);
 }
 
-.interactive-map-intro h1 {
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    font-weight: 800;
-    letter-spacing: 0.03em;
+.world-stage-wrap.is-focused .world-title {
+    opacity: 0;
+    transform: translate(-50%, -16px);
+}
+
+/* Deliberately smaller and lighter than a normal hero heading: it has
+   to name the place without competing with the world it sits in. */
+.world-title h1 {
+    font-size: clamp(1.35rem, 2.1vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--text-main);
-    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    color: rgba(245, 242, 234, 0.94);
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9);
 }
 
-.map-intro-lead {
-    font-size: 1.15rem;
+.world-title h1::after {
+    content: '';
+    display: block;
+    width: 54px;
+    height: 1px;
+    margin: 0.55rem auto 0.5rem;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.world-lead {
+    font-size: clamp(0.92rem, 1.3vw, 1.12rem);
     font-weight: 600;
+    letter-spacing: 0.02em;
     color: var(--gold-light);
-    margin-bottom: 0.3rem;
+    text-shadow: 0 1px 10px rgba(0,0,0,0.85);
 }
 
-.map-intro-desc {
-    font-size: 0.95rem;
-    color: var(--text-muted);
+.world-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    margin-top: 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: rgba(232, 232, 238, 0.62);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+}
+
+.hint-dot {
+    width: 6px; height: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--gold-light);
+    box-shadow: 0 0 8px var(--gold-glow);
+    animation: hint-breathe 3.4s ease-in-out infinite;
+}
+
+@keyframes hint-breathe {
+    0%, 100% { opacity: 0.45; transform: scale(0.85); }
+    50%      { opacity: 1;    transform: scale(1.15); }
 }
 
 
-/* ── Map shell — the fixed "viewport" of the scene ── */
+/* ── Map shell — the fixed "window" the camera looks through ── */
 .interactive-map-shell {
     position: relative;
     border-radius: var(--radius-lg);
     overflow: hidden;           /* clips the stage while the camera moves */
-    box-shadow: 0 8px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
     line-height: 0;             /* removes inline gap under img */
     background: #06080d;
+    box-shadow:
+        0 30px 90px rgba(0,0,0,0.62),
+        0 0 0 1px rgba(201,168,76,0.16),
+        0 0 70px rgba(24, 74, 96, 0.22);
+
+    /* Depth vars written by the script (pointer parallax) */
+    --par-x: 0;
+    --par-y: 0;
+    --zoom-c: 1;
+    --hs-inv: 1;
 }
 
 /* ── Camera stage — moves and scales as one scene ──
-   The focus point (--focus-x/y, in % of the map) is carried to the
-   camera target (--cam-x/y, in % of the viewport) at --zoom scale. */
+   The focus point (--fx/--fy, in % of the map) is carried to the
+   camera target (--cx/--cy, in % of the window) at --zoom-c scale.
+   Hover reuses exactly the same machinery with focus = camera =
+   the previewed marker, which is a pure 1.03 zoom about that
+   point — so a hover lean-in hands over to the full flight with
+   no second transform system. */
 .map-stage {
     position: relative;
     transform-origin: 0 0;
+
+    --fx: var(--focus-x, 50%);
+    --fy: var(--focus-y, 50%);
+    --cx: var(--cam-x, 50%);
+    --cy: var(--cam-y, 50%);
+
     transform:
         translate3d(
-            calc(var(--cam-x, 50%) - (var(--focus-x, 50%) * var(--zoom-c, 1))),
-            calc(var(--cam-y, 50%) - (var(--focus-y, 50%) * var(--zoom-c, 1))),
+            calc(var(--cx) - (var(--fx) * var(--zoom-c))),
+            calc(var(--cy) - (var(--fy) * var(--zoom-c))),
             0
         )
-        scale(var(--zoom-c, 1));
-    transition: transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        scale(var(--zoom-c));
+    transition: transform 660ms var(--ease-fly);
     will-change: transform;
+}
+
+.interactive-map-shell.is-previewing:not(.is-zoomed) {
+    --zoom-c: 1.03;
+}
+
+.interactive-map-shell.is-previewing:not(.is-zoomed) .map-stage {
+    --fx: var(--hover-x, 50%);
+    --fy: var(--hover-y, 50%);
+    --cx: var(--hover-x, 50%);
+    --cy: var(--hover-y, 50%);
+    transition-duration: 480ms;
 }
 
 .interactive-map-shell.is-zoomed {
@@ -124,19 +246,19 @@ body {
 /* Per-area camera settings — real positions of the five places
    in assets/immersive-home/09-master-world-map.png */
 .interactive-map-shell[data-area="ai"] {
-    --focus-x: 15%;  --focus-y: 60%; --zoom: 1.9; --cam-x: 28%; --cam-y: 50%;
+    --focus-x: 13%;   --focus-y: 70%; --zoom: 1.9; --cam-x: 30%; --cam-y: 52%;
 }
 .interactive-map-shell[data-area="language"] {
     --focus-x: 33.5%; --focus-y: 57%; --zoom: 1.9; --cam-x: 40%; --cam-y: 50%;
 }
 .interactive-map-shell[data-area="electric"] {
-    --focus-x: 69%;  --focus-y: 44%; --zoom: 1.9; --cam-x: 62%; --cam-y: 46%;
+    --focus-x: 69%;   --focus-y: 46%; --zoom: 1.9; --cam-x: 60%; --cam-y: 46%;
 }
 .interactive-map-shell[data-area="materials"] {
-    --focus-x: 85%;  --focus-y: 55%; --zoom: 1.9; --cam-x: 72%; --cam-y: 52%;
+    --focus-x: 83%;   --focus-y: 55%; --zoom: 1.9; --cam-x: 70%; --cam-y: 52%;
 }
 .interactive-map-shell[data-area="media"] {
-    --focus-x: 88%;  --focus-y: 75%; --zoom: 1.9; --cam-x: 78%; --cam-y: 58%;
+    --focus-x: 87%;   --focus-y: 74%; --zoom: 1.9; --cam-x: 76%; --cam-y: 56%;
 }
 
 /* Responsive image — always full width, no distortion */
@@ -148,6 +270,95 @@ body {
     user-select: none;
     pointer-events: none;
 }
+
+
+/* ============================================================
+   AMBIENT LIFE
+   Two very slow atmospheric veils and a handful of motes. The
+   whole point is that a visitor *feels* the world is alive
+   rather than watches an animation, so amplitudes stay tiny and
+   periods stay long (23–52 s).
+   ============================================================ */
+.world-air {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    transition: opacity 500ms ease;
+}
+
+.interactive-map-shell.is-zoomed .world-air { opacity: 0; }
+
+.air-veil {
+    position: absolute;
+    inset: -12% -18%;
+    display: block;
+    opacity: 0.5;
+    will-change: transform;
+}
+
+.air-veil-a {
+    background: radial-gradient(ellipse 42% 26% at 30% 34%, rgba(126, 205, 226, 0.10), transparent 68%);
+    animation: veil-drift-a 52s ease-in-out infinite;
+}
+
+.air-veil-b {
+    background: radial-gradient(ellipse 38% 22% at 72% 26%, rgba(255, 219, 158, 0.09), transparent 66%);
+    animation: veil-drift-b 41s ease-in-out infinite;
+}
+
+@keyframes veil-drift-a {
+    0%, 100% { transform: translate3d(-2.5%, 0, 0)   scale(1);    opacity: 0.42; }
+    50%      { transform: translate3d(3%, -1.4%, 0)  scale(1.07); opacity: 0.62; }
+}
+
+@keyframes veil-drift-b {
+    0%, 100% { transform: translate3d(2%, 0.6%, 0)   scale(1.05); opacity: 0.55; }
+    50%      { transform: translate3d(-2.6%, -1%, 0) scale(1);    opacity: 0.34; }
+}
+
+.air-mote {
+    position: absolute;
+    left: var(--mo-x);
+    top: var(--mo-y);
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: rgba(255, 232, 186, 0.85);
+    box-shadow: 0 0 7px rgba(255, 218, 150, 0.7);
+    opacity: 0;
+    animation: mote-rise var(--mo-t, 26s) linear infinite;
+    animation-delay: var(--mo-d, 0s);
+    will-change: transform, opacity;
+}
+
+@keyframes mote-rise {
+    0%   { transform: translate3d(0, 0, 0);          opacity: 0; }
+    12%  {                                           opacity: 0.7; }
+    70%  {                                           opacity: 0.5; }
+    100% { transform: translate3d(2.5%, -22%, 0);    opacity: 0; }
+}
+
+/* Nearest depth plane — drifts further under the pointer than
+   the map does, and yields on a slower curve than the camera
+   (900 ms vs 660 ms) so the flight reads as depth, not zoom. */
+.world-haze {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: var(--radius-lg);
+    background:
+        linear-gradient(0deg, rgba(6, 12, 20, 0.42), transparent 26%),
+        radial-gradient(ellipse 120% 46% at 50% 104%, rgba(84, 170, 190, 0.14), transparent 70%);
+    transform: translate3d(calc(var(--par-x) * 1.6%), calc(var(--par-y) * 1.1%), 0);
+    transition: transform 900ms var(--ease-fly), opacity 600ms ease;
+}
+
+.interactive-map-shell.is-zoomed .world-haze {
+    opacity: 0;
+    transform: translate3d(0, 3.5%, 0);
+}
+
 
 /* ── Local light + vignette that follows the focused area ── */
 .map-scene-light {
@@ -172,6 +383,34 @@ body {
 .interactive-map-shell.is-zoomed .map-scene-light { opacity: 1; }
 
 
+/* ── Hover / focus light ──
+   A flat veil steps the whole world back while a warm bloom
+   travels to the previewed marker. */
+.map-focus-light {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: rgba(4, 8, 14, 0.26);
+    transition: opacity 380ms ease;
+}
+
+.map-focus-light::before {
+    content: '';
+    position: absolute;
+    left: var(--hover-x, 50%);
+    top: var(--hover-y, 50%);
+    width: 30%;
+    aspect-ratio: 1.5;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 226, 168, 0.30), rgba(255, 214, 140, 0.10) 52%, transparent 74%);
+    transition: left 460ms var(--ease-fly), top 460ms var(--ease-fly);
+}
+
+.interactive-map-shell.is-previewing:not(.is-zoomed) .map-focus-light { opacity: 1; }
+
+
 /* ============================================================
    SCENIC GUIDE LAYER — the signpost (03)
    Aligned over its painted counterpart inside the camera stage,
@@ -185,7 +424,9 @@ body {
 .map-guide-layers {
     position: absolute;
     inset: 0;
-    pointer-events: none;       /* decorative — never blocks hotspots */
+    pointer-events: none;       /* decorative — never blocks markers */
+    transform: translate3d(calc(var(--par-x) * 1.15%), calc(var(--par-y) * 0.8%), 0);
+    transition: transform 700ms var(--ease-fly);
 }
 
 .guide-layer {
@@ -207,7 +448,7 @@ body {
 }
 
 /* Camera flight: one-shot luminous echo, 500ms — quicker than the
-   650ms camera move, which gives the near plane its parallax feel.
+   660ms camera move, which gives the near plane its parallax feel.
    The animation is carried by the .guide-echo helper class, added by
    the script on every area open so it replays even on a direct
    area→area switch (see replayGuideEcho). */
@@ -246,13 +487,13 @@ body {
     border-radius: var(--radius-lg);
 }
 
-/* Soft edge darkening keeps hotspot labels + panels readable */
+/* Soft edge darkening keeps the rail + panels readable */
 .detail-vignette {
     position: absolute;
     inset: 0;
     border-radius: var(--radius-lg);
     background:
-        linear-gradient(180deg, rgba(4,7,12,0.35), transparent 30%, transparent 72%, rgba(4,7,12,0.45)),
+        linear-gradient(180deg, rgba(4,7,12,0.35), transparent 30%, transparent 62%, rgba(4,7,12,0.62)),
         radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(4,7,12,0.4) 100%);
 }
 
@@ -264,7 +505,7 @@ body {
     transform: translateY(2%) scale(1.05);
     transition:
         opacity 500ms ease 320ms,
-        transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1) 320ms;
+        transform 650ms var(--ease-fly) 320ms;
 }
 
 .interactive-map-shell[data-area="ai"]        .detail-art[data-detail="ai"],
@@ -277,322 +518,383 @@ body {
 }
 
 /* Placement per area — opposite side of that area's panel */
-.detail-art[data-detail="ai"]        { width: 44%; left: 4%;  top: 8%; }
-.detail-art[data-detail="language"]  { width: 42%; left: 6%;  top: 10%; }
-.detail-art[data-detail="electric"]  { width: 46%; right: 5%; top: 10%; }
-.detail-art[data-detail="materials"] { width: 42%; right: 7%; top: 8%; }
-.detail-art[data-detail="media"]     { width: 46%; right: 5%; top: 10%; }
+.detail-art[data-detail="ai"]        { width: 42%; left: 4%;  top: 6%; }
+.detail-art[data-detail="language"]  { width: 40%; left: 6%;  top: 8%; }
+.detail-art[data-detail="electric"]  { width: 44%; right: 5%; top: 8%; }
+.detail-art[data-detail="materials"] { width: 40%; right: 7%; top: 6%; }
+.detail-art[data-detail="media"]     { width: 44%; right: 5%; top: 8%; }
 
 
 /* ============================================================
-   HOTSPOTS
+   TRAIL MARKERS
+   One <button> per area = glowing node + hairline stem +
+   permanent nameplate. The button box spans the whole marker,
+   so the hit area is roughly 130 × 80 px while the artwork
+   underneath stays visible.
    ============================================================ */
 .map-hotspots {
     position: absolute;
     inset: 0;
-    pointer-events: none;       /* layer itself doesn't block mouse */
+    pointer-events: none;       /* layer itself doesn't block the mouse */
+    transform: translate3d(calc(var(--par-x) * 0.85%), calc(var(--par-y) * 0.6%), 0);
+    transition: transform 320ms ease-out;
 }
 
-.map-hotspot {
-    --hs-size: 38px;
-    pointer-events: all;
+.map-marker {
+    --mk-node: 13px;
+    --mk-stem: 30px;
+    --mk-scale: 1;
+
     position: absolute;
-    left: var(--hs-left);
-    top: var(--hs-top);
-    /* --hs-inv counter-scales hotspots while the stage is zoomed,
-       so they keep their visual size inside the scaled scene */
-    transform: translate(-50%, -50%) scale(var(--hs-inv, 1));
-    width: var(--hs-size);
-    height: var(--hs-size);
+    left: var(--mk-x);
+    top: var(--mk-y);
+    pointer-events: auto;
 
-    /* Touch target — always at least 44×44 px (padding compensates) */
-    padding: 3px;
-
-    background: transparent;
-    border: 2px solid var(--gold);
-    border-radius: 50%;
-    cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--font);
+    line-height: 1.3;
 
-    /* Glow ring */
-    box-shadow:
-        0 0 0 0 var(--gold-glow),
-        inset 0 0 6px rgba(201,168,76,0.15);
-
-    transition:
-        transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1),
-        opacity 400ms ease,
-        box-shadow var(--transition),
-        border-color var(--transition);
-
-    animation: hs-pulse 2.8s ease-in-out infinite;
-}
-
-/* Visible name of the area — appears on hover/focus/active,
-   always available to screen readers */
-.hotspot-label {
-    position: absolute;
-    top: calc(100% + 9px);
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    line-height: 1.4;
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    color: var(--text-main);
-    background: rgba(8, 12, 18, 0.85);
-    border: 1px solid var(--border);
-    padding: 3px 11px;
-    border-radius: 999px;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition:
+        opacity 420ms ease,
+        transform 420ms var(--ease-fly);
 }
 
-.map-hotspot:hover .hotspot-label,
-.map-hotspot:focus-visible .hotspot-label,
-.map-hotspot[aria-expanded="true"] .hotspot-label {
+/* --hs-inv counter-scales markers while the stage is zoomed, so
+   they keep their visual size inside the scaled scene. The origin
+   is the node, so hover growth pushes out from the landmark. */
+.map-marker[data-place="above"] {
+    flex-direction: column;
+    transform: translate(-50%, calc(-100% + var(--mk-node) / 2)) scale(calc(var(--hs-inv) * var(--mk-scale)));
+    transform-origin: 50% calc(100% - var(--mk-node) / 2);
+}
+
+.map-marker[data-place="below"] {
+    flex-direction: column-reverse;
+    transform: translate(-50%, calc(var(--mk-node) / -2)) scale(calc(var(--hs-inv) * var(--mk-scale)));
+    transform-origin: 50% calc(var(--mk-node) / 2);
+}
+
+/* Staggered arrival — the world introduces its places one by one */
+.interactive-map-shell.is-awake .map-marker {
     opacity: 1;
+    transition-delay: calc(var(--mk-i, 0) * 120ms);
 }
 
-/* Dot in centre */
-.map-hotspot::after {
+/* ── Nameplate ── */
+.marker-plate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    padding: 6px 13px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--gold-pale);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+
+    background:
+        linear-gradient(180deg, rgba(26, 33, 46, 0.90), rgba(9, 13, 20, 0.93));
+    border: 1px solid rgba(201, 168, 76, 0.5);
+    border-radius: var(--radius-sm);
+    box-shadow:
+        0 6px 20px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255, 231, 178, 0.14);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    opacity: 0;
+    transform: translateY(7px);
+    transition:
+        opacity 480ms ease,
+        transform 480ms var(--ease-fly),
+        border-color 220ms ease,
+        background 220ms ease,
+        box-shadow 220ms ease,
+        color 220ms ease;
+}
+
+.interactive-map-shell.is-awake .marker-plate {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(var(--mk-i, 0) * 120ms + 200ms);
+}
+
+/* Small brass bead — reads as a route marker, not a UI button */
+.marker-plate::before {
     content: '';
-    display: block;
-    width: 8px;
-    height: 8px;
+    width: 5px; height: 5px;
+    flex: none;
     border-radius: 50%;
     background: var(--gold);
-    opacity: 0.85;
-    transition: opacity var(--transition), transform var(--transition);
+    box-shadow: 0 0 7px var(--gold-glow);
+    transition: background 220ms ease, box-shadow 220ms ease;
 }
 
-/* Hover / focus */
-.map-hotspot:hover,
-.map-hotspot:focus-visible {
-    transform: translate(-50%, -50%) scale(calc(var(--hs-inv, 1) * 1.22));
+/* ── Stem ── */
+.marker-stem {
+    width: 1px;
+    height: var(--mk-stem);
+    flex: none;
+    transition: background 220ms ease;
+}
+
+.map-marker[data-place="above"] .marker-stem {
+    background: linear-gradient(180deg, rgba(201,168,76,0.22), rgba(232,201,122,0.85));
+}
+
+.map-marker[data-place="below"] .marker-stem {
+    background: linear-gradient(180deg, rgba(232,201,122,0.85), rgba(201,168,76,0.22));
+}
+
+/* ── Node — the light planted at the landmark ── */
+.marker-node {
+    position: relative;
+    width: var(--mk-node);
+    height: var(--mk-node);
+    flex: none;
+}
+
+.marker-node::after {           /* the bead itself */
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #fff4d6, var(--gold) 62%, rgba(150, 112, 36, 0.95));
+    box-shadow:
+        0 0 0 1px rgba(255, 236, 190, 0.5),
+        0 2px 6px rgba(0,0,0,0.6);
+    transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+.marker-node::before {          /* the breathing halo */
+    content: '';
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 78px; height: 78px;
+    margin: -39px 0 0 -39px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 226, 168, 0.30), rgba(255, 205, 120, 0.10) 46%, transparent 70%);
+    animation: node-breathe 5.4s ease-in-out infinite;
+    animation-delay: calc(var(--mk-i, 0) * -1.05s);
+}
+
+@keyframes node-breathe {
+    0%, 100% { transform: scale(0.86); opacity: 0.7; }
+    50%      { transform: scale(1.14); opacity: 1;   }
+}
+
+/* ── Hover / focus: "you can enter here" ── */
+@media (hover: hover) {
+    .map-marker:hover { --mk-scale: 1.06; }
+}
+
+.map-marker:focus-visible,
+.map-marker[aria-expanded="true"] { --mk-scale: 1.06; }
+
+.map-marker:hover .marker-plate,
+.map-marker:focus-visible .marker-plate,
+.map-marker[aria-expanded="true"] .marker-plate {
+    color: #fffaf0;
+    background: linear-gradient(180deg, rgba(44, 54, 70, 0.94), rgba(16, 22, 32, 0.95));
     border-color: var(--gold-light);
     box-shadow:
-        0 0 0 6px var(--gold-glow),
-        inset 0 0 10px rgba(201,168,76,0.3);
-    animation: none;
+        0 10px 26px rgba(0,0,0,0.5),
+        0 0 22px rgba(201, 168, 76, 0.28),
+        inset 0 1px 0 rgba(255, 231, 178, 0.24);
 }
 
-/* Active / expanded state */
-.map-hotspot[aria-expanded="true"] {
-    transform: translate(-50%, -50%) scale(calc(var(--hs-inv, 1) * 1.15));
-    border-color: var(--gold-light);
-    box-shadow: 0 0 0 8px var(--gold-glow);
-    animation: none;
+.map-marker:hover .marker-plate::before,
+.map-marker:focus-visible .marker-plate::before,
+.map-marker[aria-expanded="true"] .marker-plate::before {
+    background: var(--gold-light);
+    box-shadow: 0 0 12px rgba(232, 201, 122, 0.9);
 }
 
-.map-hotspot[aria-expanded="true"]::after {
-    opacity: 1;
-    transform: scale(1.3);
+.map-marker:hover .marker-node::after,
+.map-marker:focus-visible .marker-node::after,
+.map-marker[aria-expanded="true"] .marker-node::after {
+    box-shadow:
+        0 0 0 1px rgba(255, 244, 214, 0.85),
+        0 0 18px rgba(255, 214, 140, 0.75),
+        0 2px 8px rgba(0,0,0,0.6);
 }
 
-/* While the camera is inside an area, quiet the other gates */
-.interactive-map-shell.is-zoomed .map-hotspot:not([aria-expanded="true"]) {
-    opacity: 0.22;
-    animation: none;
-}
+.map-marker:hover .marker-stem,
+.map-marker:focus-visible .marker-stem { width: 1.5px; }
 
-.interactive-map-shell.is-zoomed .map-hotspot:not([aria-expanded="true"]):hover,
-.interactive-map-shell.is-zoomed .map-hotspot:not([aria-expanded="true"]):focus-visible {
-    opacity: 0.85;
-}
+/* While one place is previewed, the rest of the world steps back */
+.interactive-map-shell.is-previewing .map-marker:not(.is-preview) { opacity: 0.42; }
 
-/* Pulse animation */
-@keyframes hs-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 var(--gold-glow), inset 0 0 6px rgba(201,168,76,0.15); }
-    50%       { box-shadow: 0 0 0 7px rgba(201,168,76,0.0), inset 0 0 6px rgba(201,168,76,0.15); }
-}
-
-/* Respect prefers-reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-    .map-hotspot { animation: none; }
-}
+/* While the camera is inside an area, quiet the overview markers
+   (the detail scene covers them; the rail takes over navigation) */
+.interactive-map-shell.is-zoomed .map-marker:not([aria-expanded="true"]) { opacity: 0.2; }
 
 
 /* ============================================================
-   INFO PANELS
+   TRAVEL BOARD — the area's links, anchored into the world
+   Enamel sign on a brass frame with corner rivets and a hanging
+   bracket; the links are routed direction plates, never a card
+   of generic buttons.
    ============================================================ */
 .map-panel-layer {
     position: absolute;
     inset: 0;
     pointer-events: none;
+    z-index: 4;
 }
 
 .map-info-panel {
-    /* Transparent (pre-open) panel must not intercept clicks meant for the
-       hotspots / map behind it. pointer-events are enabled only once the
-       panel is actually opening (.is-open, added in sync with the fade). */
+    /* A transparent (pre-open) board must not intercept clicks meant
+       for the markers / map behind it. pointer-events are enabled
+       only once the board is actually opening (.is-open). */
     pointer-events: none;
     position: absolute;
     left: var(--panel-left);
     top: var(--panel-top);
     line-height: 1.5;
 
-    width: 300px;
+    width: 330px;
     max-width: calc(100% - 2rem);
+    padding: 24px 22px 18px;
 
-    background: linear-gradient(160deg, rgba(23, 29, 41, 0.94), rgba(11, 15, 22, 0.94));
-    border: 1px solid rgba(201, 168, 76, 0.38);
-    border-radius: var(--radius-md);
-    padding: 18px 20px 16px;
-    box-shadow: var(--shadow-card);
+    background:
+        radial-gradient(circle 2px at 11px 11px,                       rgba(232,201,122,0.55), transparent 100%),
+        radial-gradient(circle 2px at calc(100% - 11px) 11px,          rgba(232,201,122,0.55), transparent 100%),
+        radial-gradient(circle 2px at 11px calc(100% - 11px),          rgba(232,201,122,0.4),  transparent 100%),
+        radial-gradient(circle 2px at calc(100% - 11px) calc(100% - 11px), rgba(232,201,122,0.4), transparent 100%),
+        /* warm lamp glow along the top edge — enamel, not flat black */
+        radial-gradient(ellipse 80% 42% at 50% -6%, rgba(232, 201, 122, 0.16), transparent 70%),
+        linear-gradient(168deg, rgba(30, 37, 51, 0.95), rgba(12, 16, 24, 0.96)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 6px);
+    border: 1px solid rgba(201, 168, 76, 0.5);
+    border-radius: var(--radius-sm);
+    box-shadow:
+        0 24px 54px rgba(0,0,0,0.62),
+        0 0 0 1px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255, 231, 178, 0.13);
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px) saturate(1.08);
+    -webkit-backdrop-filter: blur(14px) saturate(1.08);
 
-    /* The wait for the camera lives in JS (single source of timing); the
-       fade itself has no extra transition-delay here. */
+    /* The wait for the camera lives in JS (single source of timing);
+       the fade itself carries no extra transition-delay here. */
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px) rotate(-0.5deg);
     transition:
         opacity 340ms ease,
-        transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        transform 420ms var(--ease-fly);
 }
 
 .map-info-panel.is-open {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) rotate(-0.5deg);
     pointer-events: auto;
 }
 
-/* Atlas-legend framing: small kicker + inner dashed frame */
+/* Hanging bracket — the board is fixed into the scene, not floating */
 .map-info-panel::before {
-    content: 'Oblast mapy';
-    display: block;
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 0.45rem;
+    content: '';
+    position: absolute;
+    left: 50%; top: -20px;
+    width: 1px; height: 20px;
+    background: linear-gradient(rgba(201,168,76,0), rgba(201,168,76,0.8));
+    pointer-events: none;
 }
 
+/* Inner engraved hairline */
 .map-info-panel::after {
     content: '';
     position: absolute;
     inset: 5px;
-    border: 1px dashed rgba(201, 168, 76, 0.22);
-    border-radius: calc(var(--radius-md) - 4px);
+    border: 1px solid rgba(201, 168, 76, 0.16);
+    border-radius: 2px;
     pointer-events: none;
 }
 
-/* Panel is hidden via [hidden] attribute */
+/* Board is hidden via the [hidden] attribute */
 .map-info-panel[hidden] { display: none; }
 
-/* Return to the full map */
-.panel-return {
-    margin-top: 12px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5em;
-    padding: 8px 10px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--gold-light);
-    font-family: var(--font);
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    transition: background var(--transition), border-color var(--transition);
-}
-
-.panel-return:hover,
-.panel-return:focus-visible {
-    background: rgba(201, 168, 76, 0.14);
-    border-color: rgba(201, 168, 76, 0.5);
-}
-
-.panel-return .fa-arrow-left {
-    font-size: 0.8em;
-    opacity: 0.75;
-}
-
-/* Close button */
-.panel-close {
-    position: absolute;
-    top: 10px; right: 10px;
-    width: 26px; height: 26px;
-    border: none;
-    background: rgba(255,255,255,0.07);
-    color: var(--text-muted);
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background var(--transition), color var(--transition);
-}
-
-.panel-close:hover,
-.panel-close:focus-visible {
-    background: rgba(201,168,76,0.15);
-    color: var(--gold-light);
-}
-
-/* Panel content */
-.panel-title {
-    font-size: 0.95rem;
+.panel-kicker {
+    font-size: 0.6rem;
     font-weight: 700;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: rgba(154, 154, 170, 0.85);
+    padding-right: 2rem;
+    margin-bottom: 0.35rem;
+}
+
+.panel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     color: var(--gold-light);
-    margin-bottom: 0.4rem;
-    padding-right: 1.5rem;   /* avoid overlap with close btn */
+    padding: 0 1.5rem 0.55rem 0;   /* room for the close button */
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.25);
     display: flex;
     align-items: center;
-    gap: 0.4em;
+    gap: 0.45em;
 }
 
 .panel-icon {
-    font-size: 0.85em;
+    font-size: 0.8em;
     opacity: 0.8;
 }
 
 .panel-desc {
     font-size: 0.82rem;
     color: var(--text-muted);
-    margin-bottom: 0.8rem;
-    line-height: 1.5;
+    margin-bottom: 0.85rem;
+    line-height: 1.55;
 }
 
 .panel-links {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 7px;
 }
 
+/* Direction plates — a routed sign, not a SaaS list item */
 .panel-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.4em;
-    padding: 7px 10px;
-    background: rgba(201,168,76,0.08);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    gap: 0.6em;
+    min-height: 44px;
+    padding: 9px 12px 9px 14px;
+    background: linear-gradient(90deg, rgba(201,168,76,0.14), rgba(201,168,76,0.04));
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-left: 3px solid rgba(201, 168, 76, 0.75);
+    border-radius: 2px;
     color: var(--text-main);
     text-decoration: none;
-    font-size: 0.83rem;
+    font-size: 0.84rem;
     font-weight: 600;
-    transition: background var(--transition), color var(--transition), border-color var(--transition);
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        color var(--transition),
+        transform var(--transition);
 }
 
 .panel-link:hover,
 .panel-link:focus-visible {
-    background: rgba(201,168,76,0.18);
-    color: var(--gold-light);
-    border-color: rgba(201,168,76,0.45);
+    background: linear-gradient(90deg, rgba(201,168,76,0.28), rgba(201,168,76,0.09));
+    border-color: rgba(232, 201, 122, 0.5);
+    border-left-color: var(--gold-light);
+    color: #fff9e8;
+    transform: translateX(3px);
 }
 
 .panel-link .fa-arrow-up-right-from-square {
@@ -601,20 +903,199 @@ body {
     flex-shrink: 0;
 }
 
+/* Way back out */
+.panel-return {
+    margin-top: 14px;
+    padding-top: 11px;
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55em;
+    border: 0;
+    border-top: 1px solid rgba(201, 168, 76, 0.18);
+    background: transparent;
+    color: rgba(232, 201, 122, 0.85);
+    font-family: var(--font);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color var(--transition);
+}
+
+.panel-return:hover,
+.panel-return:focus-visible { color: #fff9e8; }
+
+.panel-return .fa-arrow-left-long {
+    font-size: 0.9em;
+    opacity: 0.75;
+    transition: transform var(--transition);
+}
+
+.panel-return:hover .fa-arrow-left-long { transform: translateX(-3px); }
+
+/* Close button */
+.panel-close {
+    position: absolute;
+    top: 9px; right: 9px;
+    width: 28px; height: 28px;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-muted);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.panel-close:hover,
+.panel-close:focus-visible {
+    background: rgba(201,168,76,0.16);
+    border-color: rgba(201,168,76,0.45);
+    color: var(--gold-light);
+}
+
 
 /* ============================================================
-   REDUCED MOTION — switch states almost instantly
+   SIGNPOST RAIL — visible only inside an area
+   Keeps every other place one click away (direct A → B flight)
+   now that the detail scene covers the overview markers.
+   ============================================================ */
+.world-rail {
+    position: absolute;
+    left: 50%;
+    bottom: 3%;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px;
+    /* Anchored with left:50%, the shrink-to-fit width would only be the
+       half of the frame to its right and the plates would wrap onto a
+       second row. max-content asks for the whole strip instead. */
+    width: max-content;
+    max-width: calc(100% - 2rem);
+    padding: 4px 8px;
+
+    background: linear-gradient(180deg, rgba(15, 20, 30, 0.84), rgba(7, 10, 16, 0.9));
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,231,178,0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 12px);
+    transition:
+        opacity 340ms ease,
+        transform 380ms var(--ease-fly),
+        visibility 0s linear 380ms;
+}
+
+.interactive-map-shell.is-zoomed .world-rail {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+    transition-delay: 260ms, 260ms, 260ms;
+}
+
+.rail-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    min-height: 44px;
+    padding: 6px 12px;
+    background: none;
+    border: 0;
+    border-radius: 2px;
+    color: rgba(232, 232, 238, 0.7);
+    font-family: var(--font);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--transition), background var(--transition);
+}
+
+.rail-item:hover,
+.rail-item:focus-visible {
+    color: var(--gold-light);
+    background: rgba(201, 168, 76, 0.12);
+}
+
+.rail-item[aria-current="true"] {
+    color: #0d1017;
+    background: linear-gradient(180deg, var(--gold-light), var(--gold));
+    text-shadow: none;
+}
+
+.rail-home { color: rgba(232, 201, 122, 0.85); }
+
+.rail-home .fa-arrow-left-long {
+    font-size: 0.9em;
+    opacity: 0.8;
+    transition: transform var(--transition);
+}
+
+.rail-home:hover .fa-arrow-left-long { transform: translateX(-3px); }
+
+.rail-sep {
+    width: 1px;
+    align-self: stretch;
+    margin: 6px 6px;
+    background: rgba(201, 168, 76, 0.25);
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   No cinematic camera, no ambient loops, no parallax, no echo —
+   but every place keeps its permanent nameplate and light, so
+   what is clickable stays obvious without a single animation.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }   /* no animated focus/scroll jumps */
 
-    /* No echo flight at all — the layers simply stay invisible */
-    .guide-layer { animation: none !important; }
+    .guide-layer,
+    .hint-dot,
+    .air-veil,
+    .air-mote,
+    .marker-node::before {
+        animation: none !important;
+    }
+
+    /* The ambient layers stay as still light, not moving light */
+    .air-mote { opacity: 0.45; }
+    .marker-node::before { opacity: 0.9; transform: scale(1); }
+
+    /* No optical lean-in either — with zeroed durations it would snap
+       the whole map sideways. Preview stays: bloom + step-back + the
+       marker's own highlight, all of it motionless. */
+    .interactive-map-shell.is-previewing:not(.is-zoomed) { --zoom-c: 1; }
 
     .map-stage,
+    .map-hotspots,
+    .map-marker,
+    .marker-plate,
     .map-scene-light,
-    .map-hotspot,
-    .hotspot-label,
+    .map-focus-light,
+    .map-focus-light::before,
+    .map-guide-layers,
+    .world-haze,
+    .world-air,
+    .world-title,
+    .world-rail,
     .map-detail-scene,
     .detail-art,
     .map-info-panel {
@@ -629,10 +1110,11 @@ body {
    ============================================================ */
 .map-mobile-areas {
     display: none;   /* hidden on desktop */
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
     border-radius: var(--radius-md);
     overflow: hidden;
     border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
 }
 
 .mobile-area-item {
@@ -645,11 +1127,14 @@ body {
     display: flex;
     align-items: center;
     gap: 0.7em;
-    padding: 0.9rem 1.1rem;
-    font-size: 0.95rem;
-    font-weight: 600;
+    min-height: 52px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--gold-light);
-    background: rgba(201,168,76,0.05);
+    background: linear-gradient(180deg, rgba(201,168,76,0.08), rgba(201,168,76,0.03));
     cursor: pointer;
     list-style: none;
     user-select: none;
@@ -657,26 +1142,26 @@ body {
 }
 
 .mobile-area-summary::-webkit-details-marker { display: none; }
+
 .mobile-area-summary::before {
     content: '+';
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 300;
     color: var(--gold);
     margin-left: auto;
     order: 99;
-    transition: transform var(--transition);
 }
 
 details[open] .mobile-area-summary::before { content: '−'; }
 
-.mobile-area-summary:hover { background: rgba(201,168,76,0.1); }
+.mobile-area-summary:hover { background: rgba(201,168,76,0.12); }
 
 .mobile-area-links {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 0.7rem 1rem 0.9rem;
-    background: rgba(0,0,0,0.2);
+    gap: 7px;
+    padding: 0.8rem 1rem 1rem;
+    background: rgba(0,0,0,0.24);
 }
 
 /* Small decorative diorama of the area (webp, lazy-loaded) */
@@ -685,51 +1170,106 @@ details[open] .mobile-area-summary::before { content: '−'; }
     width: auto;
     max-width: 100%;
     height: 130px;
-    margin: 0 auto 4px;
+    margin: 0 auto 6px;
     object-fit: contain;
 }
 
 .mobile-area-link {
-    display: block;
-    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 9px 12px 9px 14px;
     color: var(--text-main);
     text-decoration: none;
-    font-size: 0.88rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.03);
+    font-size: 0.86rem;
+    font-weight: 600;
+    border-radius: 2px;
+    border: 1px solid rgba(201, 168, 76, 0.24);
+    border-left: 3px solid rgba(201, 168, 76, 0.7);
+    background: linear-gradient(90deg, rgba(201,168,76,0.12), rgba(201,168,76,0.03));
     transition: background var(--transition), color var(--transition);
 }
 
 .mobile-area-link:hover,
 .mobile-area-link:focus-visible {
-    background: rgba(201,168,76,0.12);
+    background: linear-gradient(90deg, rgba(201,168,76,0.24), rgba(201,168,76,0.07));
     color: var(--gold-light);
 }
 
 
 /* ============================================================
-   RESPONSIVE — hide hotspots+panels, show accordion
+   RESPONSIVE — below 900px the cinematic world stands down and
+   the stable accordion takes over (unchanged in principle)
    ============================================================ */
 @media (max-width: 900px) {
     .map-hotspots,
     .map-panel-layer,
     .map-detail-scene,
-    .map-guide-layers {
+    .map-guide-layers,
+    .map-focus-light,
+    .world-air,
+    .world-haze,
+    .world-rail {
         display: none;
     }
 
-    .map-mobile-areas {
+    .map-mobile-areas { display: block; }
+
+    .world-stage-wrap {
+        width: 100%;
         display: block;
     }
 
-    .interactive-map-shell {
-        overflow: hidden;
+    /* The title returns to ordinary flow above the map banner */
+    .world-title {
+        position: static;
+        transform: none;
+        width: auto;
+        max-width: none;
+        padding: 0 0 1.1rem;
+        background: none;
     }
 
-    .interactive-map-section {
-        padding: 2rem 1rem 1.5rem;
+    .world-stage-wrap.is-focused .world-title {
+        opacity: 1;
+        transform: none;
     }
+
+    .world-title h1 { font-size: clamp(1.5rem, 7vw, 2rem); }
+
+    .interactive-map-shell {
+        box-shadow: 0 12px 34px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.14);
+    }
+
+    .world-section { padding: 1.75rem 1rem 1.25rem; }
+    .world-section::before { display: none; }
+}
+
+/* Narrow desktops — keep the nameplates from crowding each other */
+@media (min-width: 901px) and (max-width: 1150px) {
+    .marker-plate {
+        font-size: 0.68rem;
+        letter-spacing: 0.07em;
+        padding: 5px 10px;
+    }
+    .map-marker { --mk-stem: 24px; }
+    .rail-item { font-size: 0.64rem; padding: 6px 9px; letter-spacing: 0.07em; }
+    .map-info-panel { width: 300px; }
+}
+
+/* Short or narrow scenes — the map itself gets shorter, so the title
+   has to give the Elektro nameplate (the highest one, at 36% of the
+   map) its clear sky back. */
+@media (min-width: 901px) and (max-width: 1150px),
+       (min-width: 901px) and (max-height: 780px) {
+    .world-title {
+        top: clamp(4px, 1.8%, 18px);
+        padding: 0.3rem 1.2rem 0.55rem;
+    }
+    .world-title h1 { font-size: clamp(1.2rem, 2vw, 1.75rem); }
+    .world-title h1::after { margin: 0.4rem auto 0.35rem; }
+    .world-lead { font-size: 0.9rem; }
+    .world-hint { font-size: 0.65rem; margin-top: 0.3rem; }
 }
 
 
@@ -744,47 +1284,62 @@ details[open] .mobile-area-summary::before { content: '−'; }
 
 
 /* ============================================================
-   FEATURES SECTION (grid of 8 tools — preserved from main)
+   FEATURES SECTION — the practical index of every route.
+   Deliberately quieter than the world above it: a long pause,
+   a small subtitle and a modest heading, so the hierarchy reads
+   "explore up here / look things up down here".
    ============================================================ */
 .features-section {
-    padding: 3rem 0 4rem;
+    position: relative;
+    padding: clamp(3.5rem, 8vh, 6rem) 0 4rem;
+}
+
+.features-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: min(100%, 420px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.35), transparent);
 }
 
 .features-intro {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2.25rem;
 }
 
 .section-subtitle {
-    font-size: 0.78rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
-    color: var(--gold);
+    letter-spacing: 0.28em;
+    color: rgba(201, 168, 76, 0.75);
     text-transform: uppercase;
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
 }
 
 .features-intro h2 {
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
+    font-size: clamp(1.2rem, 2vw, 1.65rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
 }
 
 .accent-line {
-    width: 48px;
-    height: 3px;
+    width: 34px;
+    height: 2px;
     background: linear-gradient(90deg, var(--gold), var(--gold-light));
     border-radius: 2px;
-    margin: 0.6rem auto 1rem;
+    margin: 0.6rem auto 0.9rem;
 }
 
 .features-intro p {
-    max-width: 580px;
+    max-width: 560px;
     margin: 0 auto;
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: 0.88rem;
 }
 
 .features-grid {
