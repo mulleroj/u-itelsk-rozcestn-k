@@ -88,6 +88,11 @@
 
     var CARD_FADE    = 0.032;   // card ramps, just outside the plateau
 
+    /* Breathing room above the area's summary when the flight hands over
+       to the accordion, so it lands comfortably in view rather than
+       glued to the top edge. */
+    var STATIC_TOP_GAP = 24;
+
     /* The place itself resolves over a window that reaches exactly to the
        apex of the arc between two stops (0.040 either side of a plateau
        lands on the transit waypoint). So one place has fully dissolved at
@@ -300,17 +305,21 @@
 
     /* Was the visitor's focus inside the flight UI? By the time the media
        query fires, the CSS has already hidden those controls and focus
-       has fallen back to <body>, so the answer has to be remembered as it
-       happens rather than reconstructed afterwards. */
+       has fallen back to the document, so the answer has to be
+       remembered as it happens rather than reconstructed afterwards. */
     var focusInJourney = false;
+
+    /* Where a browser parks focus when the focused element disappears:
+       <body> in most, <html> in some. Neither is the visitor moving
+       focus somewhere, so neither may clear the flag a moment before we
+       need to read it. */
+    function isFocusFallback(el) {
+        return !el || el === document.body || el === document.documentElement;
+    }
 
     document.addEventListener('focusin', function (e) {
         var el = e.target;
-        /* When the media query hides the flight, the browser drops focus
-           to <body> — and that fallback must not be mistaken for the
-           visitor moving focus somewhere else, or the flag would be
-           cleared a moment before we need to read it. */
-        if (!el || el === document.body || !el.closest) return;
+        if (isFocusFallback(el) || !el.closest) return;
         focusInJourney = !!el.closest('.journey-stop, .journey-rail');
     });
 
@@ -334,18 +343,40 @@
         carriedArea = carry;
         d.open = true;
 
+        var summary = d.querySelector('.mobile-area-summary');
+
         /* Move focus only when it would otherwise be stranded on a
            control that no longer exists. Focus the visitor has on
-           something still visible is left where it is. */
+           something still visible is left where it is. preventScroll
+           because the positioning below owns where we end up. */
         var ae = document.activeElement;
         var stranded = focusInJourney &&
-                       (!ae || ae === document.body || ae.offsetParent === null);
+                       (isFocusFallback(ae) || ae.offsetParent === null);
 
-        if (stranded) {
-            var summary = d.querySelector('.mobile-area-summary');
-            if (summary) summary.focus();
+        if (stranded && summary) {
+            summary.focus({ preventScroll: true });
             focusInJourney = false;
         }
+
+        if (!summary) return;
+
+        /* Opening the area is not enough: the 640vh track collapses as
+           the media query lands, and the browser re-anchors the scroll
+           somewhere else entirely — typically the end of the page. The
+           area the visitor was reading has to be brought back on screen.
+           The static layout that decides where the summary sits does not
+           exist yet on this frame, so we measure on the frame after the
+           style and layout have both been committed, then jump. One
+           read, no loop, no guessed timeout. */
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                if (!staticMode.matches) return;   // mode flipped back meanwhile
+                var top = summary.getBoundingClientRect().top + window.pageYOffset;
+                instantly(function () {
+                    window.scrollTo(0, Math.max(0, Math.round(top - STATIC_TOP_GAP)));
+                });
+            });
+        });
     }
 
     /* Coming back out of static mode, the document grows from roughly two
